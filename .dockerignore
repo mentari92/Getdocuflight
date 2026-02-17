@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+_bmad
+_bmad-output
+Brain
+docs
+.agent
+.DS_Store
+.env
+.env.local

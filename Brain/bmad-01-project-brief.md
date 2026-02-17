@@ -1,0 +1,160 @@
+# Project Brief: GetDocuFlight – AI Visa Predictor
+
+**Version:** 2.0  
+**Status:** Final — Ready for Development  
+**Updated:** Includes document upload flow, free/paid tier logic, security architecture, compliance
+
+---
+
+## Problem Statement
+
+Travelers from developing countries (Indonesia, Philippines, Vietnam, Nigeria, etc.) struggle to assess their visa application chances before spending time and money on the full application process. There is no accessible, personalized tool that evaluates their specific profile — employment status, financial standing, travel history — and gives an honest probability of approval.
+
+The result: applicants waste money on visa fees, flights, and accommodation bookings only to get rejected, often without understanding why.
+
+---
+
+## Solution
+
+An AI-powered visa approval predictor that:
+1. Takes a user's profile as input via form (nationality, destination, finances, travel history)
+2. Returns a **1–2 paragraph free preview** to create curiosity
+3. Unlocks **full results + personalized recommendations** behind a $5.00 paywall
+4. Optionally allows document upload within 24 hours post-payment for **higher-accuracy re-analysis**
+
+---
+
+## Target Users
+
+**Primary:** Indonesian travelers applying for visas to Japan, Australia, South Korea, Schengen countries, and the US.
+
+**Secondary:** Travelers from Philippines, Vietnam, India, and Nigeria with the same pain point.
+
+**User persona:** Mentari, 28, marketing professional in Jakarta. Wants to apply for a Japan tourist visa. Has savings but is unsure if her profile is strong enough. Does not want to waste the Rp 1.5 million embassy fee if her chances are low.
+
+---
+
+## MVP Scope
+
+The MVP covers **AI Visa Predictor only** — not the full GetDocuFlight platform.
+
+**In scope:**
+- User registration and login (email)
+- Visa predictor form (10 input fields)
+- Rule-based + AI scoring engine (GPT-4o for document vision support)
+- **Free preview:** 1–2 paragraph teaser result (no score, no breakdown)
+- **Paid full result** ($5.00): approval score, factor breakdown, general summary + specific recommendations
+- **Document upload (Opsi C):** After payment, user can upload documents within 24 hours to trigger re-analysis for higher accuracy
+- Document types allowed: rekening koran, surat keterangan kerja, slip gaji, halaman visa/cap paspor
+- **No upload:** KTP, NIK, paspor halaman biodata — tidak diperlukan
+- Email delivery of result via Resend
+- User dashboard: prediction history + re-access paid results + document upload CTA
+- Consent screen before any document upload (UU PDP + GDPR compliant)
+- Auto-delete documents within 24 hours after re-analysis completes
+
+**Out of scope (later phases):**
+- Free visa checker
+- Dummy ticket booking
+- Stripe (international payments)
+- Blog / content
+
+---
+
+## Business Model
+
+**Free:**
+- Submit form → AI generates result
+- See 1–2 paragraph teaser only (no score, no breakdown, no recommendations)
+- Teaser hints at key issues but doesn't reveal them explicitly
+- CTA: *"Lihat hasil lengkap + saran perbaikan → $5.00"*
+
+**Paid — $5.00 USD:**
+- Charged in IDR dynamically at checkout (kurs harian via freecurrencyapi.com)
+- Indonesian users: DompetX (VA, QRIS, GoPay, OVO, DANA, ShopeePay)
+- International users: Stripe (credit/debit card)
+- **Immediately after payment:** Full result from form data
+  - Approval score (0–100)
+  - Risk level badge (LOW / MEDIUM / HIGH)
+  - 3–5 factors with impact analysis
+  - **Saran perbaikan — dua format:**
+    - Summary general: "3 hal utama yang perlu diperkuat sebelum apply"
+    - Breakdown spesifik per faktor: "Saldo tabungan kamu Rp 45 juta, untuk visa Schengen sebaiknya minimal Rp 70 juta. Tunda apply 2–3 bulan."
+- **Within 24 hours:** User can upload documents for re-analysis
+  - Upload trigger: re-run AI with document context → updated score + revised recommendations
+  - Documents added: rekening koran (highest value), surat kerja, slip gaji, halaman visa/cap paspor
+
+---
+
+## Success Metrics
+
+- 100 paid predictions in first 30 days post-launch
+- Conversion rate: form submission → payment ≥ 15%
+- Document upload rate (post-payment): ≥ 30%
+- Average rating from users ≥ 4/5
+
+---
+
+## Tech Stack (Pre-decided, LOCKED)
+
+| Component | Technology | Notes |
+|-----------|-----------|-------|
+| Framework | Next.js (App Router) | |
+| Database | PostgreSQL 16 + Prisma | |
+| Cache / Queue | Redis | Results cache + document deletion jobs |
+| Auth | Auth.js (NextAuth v5) | |
+| AI | OpenAI GPT-4o | Upgraded from mini — needed for document vision (PDF/image reading) |
+| Payment | DompetX | IDR methods |
+| Email | Resend | |
+| File Storage | MinIO (active) | AES-256 per-user encryption |
+| Malware Scan | ClamAV (Docker) | Free, open source |
+| Hosting | VPS Contabo — **Europe region** | GDPR compliance for data protection |
+| Currency API | freecurrencyapi.com | Free tier: 5,000 req/month |
+
+---
+
+## Server Location Decision
+
+**Contabo VPS di region Eropa (Jerman).**
+
+Alasan: Server di Eropa tunduk pada GDPR — regulasi perlindungan data terkuat di dunia. UU PDP Indonesia Pasal 56 mengizinkan transfer data ke negara dengan standar perlindungan setara atau lebih tinggi. GDPR memenuhi syarat tersebut.
+
+Implikasi: Privacy Policy wajib menyebutkan bahwa data disimpan di server Eropa yang tunduk pada GDPR, dan dokumen diproses oleh OpenAI (AS) berdasarkan OpenAI Data Processing Agreement.
+
+---
+
+## Compliance Requirements
+
+| Regulasi | Status | Kewajiban Utama |
+|----------|--------|----------------|
+| UU PDP No. 27/2022 (Indonesia) | ✅ Berlaku penuh okt 2024 | Explicit consent, hak hapus data, breach notification 3×24 jam |
+| GDPR (Eropa) | ✅ Berlaku di server location | Server Contabo Eropa, audit trail, data minimization |
+| OpenAI DPA | Wajib sebelum production | Data Processing Agreement dengan OpenAI untuk processing dokumen user |
+
+**Kewajiban minimum sebelum launch:**
+1. Consent screen sebelum upload dokumen — menyebutkan OpenAI sebagai sub-processor
+2. Tombol "Hapus dokumen saya" yang berfungsi di dashboard
+3. Auto-delete dokumen 24 jam setelah re-analysis
+4. Privacy Policy yang menyebutkan server Eropa + OpenAI DPA
+5. Prosedur breach notification (max 3×24 jam ke user + lembaga)
+
+---
+
+## Constraints
+
+- Solo developer, limited budget
+- Must launch within 4–6 weeks
+- Hosting on existing Contabo VPS (Europe)
+- Payment gateway must support Indonesian methods (VA, QRIS, e-Wallet)
+
+---
+
+## Risks
+
+| Risk | Mitigation |
+|------|-----------|
+| OpenAI API costs higher (GPT-4o vs mini) | Cache results by inputHash; document upload only on paid tier |
+| Low conversion from preview to paid | Make 1–2 paragraph teaser compelling — hint at problems without revealing them |
+| Document breach / UU PDP violation | 6-layer security architecture: ClamAV + AES-256 + memory-only processing + auto-delete + audit log |
+| DompetX integration delay | Build payment flow last; use mock webhook in dev |
+| AI result accuracy questioned | Add disclaimer: "indicative only, not a guarantee" |
+| GDPR compliance complexity | Server di Eropa = GDPR applies by default; OpenAI DPA covers sub-processing |

@@ -1,0 +1,220 @@
+// GetDocuFlight – Prisma Schema
+// Architecture v2.0: Auth.js + Prediction + Order + Document + EncryptionKey + AuditLog
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Enums (Architecture v2.0 §3)
+// ============================================
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum OrderStatus {
+  PENDING
+  WAITING_PAYMENT
+  PAID
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+enum ProductType {
+  AI_PREDICTION
+}
+
+enum PaymentGateway {
+  DOMPETX
+  STRIPE
+}
+
+enum DocumentType {
+  BANK_STATEMENT
+  EMPLOYMENT_LETTER
+  SALARY_SLIP
+  PASSPORT_STAMPS
+}
+
+enum DocumentStatus {
+  PROCESSING
+  ANALYZED
+  DELETED
+}
+
+// ============================================
+// Auth.js Models (NextAuth v5 Prisma Adapter)
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+
+  accounts       Account[]
+  sessions       Session[]
+  predictions    Prediction[]
+  orders         Order[]
+  documents      Document[]
+  encryptionKeys EncryptionKey[]
+  auditLogs      AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+
+  refresh_token String? @db.Text
+  access_token  String? @db.Text
+  expires_at    Int?
+  token_type    String?
+  scope         String?
+  id_token      String? @db.Text
+  session_state String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================
+// Business Models (Architecture v2.0 §3)
+// ============================================
+
+model Prediction {
+  id                    String     @id @default(cuid())
+  userId                String?
+  fromCountry           String
+  toCountry             String
+  inputData             Json
+  inputHash             String
+  approvalScore         Int
+  approvalScoreWithDocs Int?
+  riskLevel             RiskLevel
+  teaser                String     @db.Text
+  recommendation        String     @db.Text
+  recommendationSummary Json
+  factors               Json
+  hasDocumentAnalysis   Boolean    @default(false)
+  isPaid                Boolean    @default(false)
+  orderId               String?
+  uploadWindowExpiresAt DateTime?
+
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order     Order?     @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  documents Document[]
+
+  createdAt DateTime @default(now())
+
+  @@index([inputHash])
+}
+
+model Order {
+  id             String         @id @default(cuid())
+  userId         String?
+  productType    ProductType
+  amountUSD      Float
+  amountIDR      Float
+  exchangeRate   Float
+  currency       String         @default("IDR")
+  status         OrderStatus    @default(PENDING)
+  paymentGateway PaymentGateway
+  paymentMethod  String?
+  paymentRef     String?
+  productId      String?
+
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  predictions Prediction[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  paidAt    DateTime?
+}
+
+// ============================================
+// Document Security Models (Architecture v2.0 §3, §6)
+// ============================================
+
+model Document {
+  id              String         @id @default(cuid())
+  userId          String
+  predictionId    String
+  fileType        DocumentType
+  storagePath     String
+  encryptionKeyId String?
+  status          DocumentStatus @default(PROCESSING)
+  scheduledDeleteAt DateTime
+  deletedAt       DateTime?
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prediction    Prediction     @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  encryptionKey EncryptionKey?
+
+  createdAt DateTime @default(now())
+}
+
+model EncryptionKey {
+  id           String    @id @default(cuid())
+  userId       String
+  documentId   String    @unique
+  encryptedKey String    @db.Text
+  deletedAt    DateTime?
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  fileId    String?
+  userId    String
+  purpose   String   @default("visa_prediction_reanalysis")
+  ipAddress String
+  timestamp DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

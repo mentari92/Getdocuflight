@@ -1,0 +1,163 @@
+# ============================================================
+# GetDocuFlight – Docker Compose (Architecture v2.0)
+# Services: app, postgres, redis, minio, clamav, nginx
+# ============================================================
+
+services:
+
+  # ── Next.js Application ──────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: getdocuflight-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_USE_SSL=false
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
+      - MINIO_BUCKET=${MINIO_BUCKET}
+      - CLAMAV_HOST=clamav
+      - CLAMAV_PORT=3310
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    networks:
+      - getdocuflight_net
+
+  # ── PostgreSQL 16 ────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: getdocuflight-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # SECURITY: Not exposed to host — accessible only via internal network
+    networks:
+      - getdocuflight_net
+
+  # ── Redis 7 (Cache + Document Deletion Queue) ───────────
+  redis:
+    image: redis:7-alpine
+    container_name: getdocuflight-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # SECURITY: Not exposed to host
+    networks:
+      - getdocuflight_net
+
+  # ── MinIO (AES-256 Encrypted Document Storage) ──────────
+  minio:
+    image: minio/minio:latest
+    container_name: getdocuflight-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"   # S3-compatible API
+      - "9001:9001"   # Web Console
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - getdocuflight_net
+
+  # ── MinIO Bucket Initialization ─────────────────────────
+  minio-init:
+    image: minio/mc:latest
+    container_name: getdocuflight-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET:-getdocuflight-documents}
+    volumes:
+      - ./scripts/init-minio.sh:/init-minio.sh:ro
+    entrypoint: ["/bin/sh", "/init-minio.sh"]
+    restart: "no"
+    networks:
+      - getdocuflight_net
+
+  # ── ClamAV (Malware Scanning) ───────────────────────────
+  clamav:
+    image: clamav/clamav-debian:latest
+    container_name: getdocuflight-clamav
+    restart: unless-stopped
+    ports:
+      - "3310:3310"   # ClamD TCP socket
+    healthcheck:
+      test: ["CMD", "clamdscan", "--ping", "3"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s   # ClamAV needs time to download + load virus definitions (~3.6M sigs)
+    networks:
+      - getdocuflight_net
+
+  # ── Nginx (Reverse Proxy) ───────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: getdocuflight-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    networks:
+      - getdocuflight_net
+
+# ── Named Volumes (Data Persistence) ────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+
+# ── Internal Network (GDPR Security) ────────────────────────
+networks:
+  getdocuflight_net:
+    driver: bridge

@@ -1,0 +1,9 @@
+# Development overrides — expose Postgres & Redis for local Prisma CLI / npm run dev
+# This file is auto-loaded by docker compose alongside docker-compose.yml
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+  redis:
+    ports:
+      - "6379:6379"

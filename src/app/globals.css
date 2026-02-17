@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+/*
+ * GetDocuFlight — Bazi-Aligned Design System
+ * Fire: Purple #9333EA (primary), Pink #EC4899 (secondary)
+ * Earth: Gold #F59E0B (highlights), Cream #FFFBEB (card/footer accents)
+ * Metal: White #FFFFFF (page background + card surfaces)
+ * NO GREEN anywhere in the UI
+ */
+
+@theme {
+    /* ── Fire Element ─────────────────────────── */
+    --color-primary: #9333EA;
+    --color-primary-light: #A855F7;
+    --color-primary-dark: #7E22CE;
+    --color-primary-50: #FAF5FF;
+    --color-primary-100: #F3E8FF;
+    --color-primary-200: #E9D5FF;
+    --color-primary-500: #9333EA;
+    --color-primary-600: #7E22CE;
+    --color-primary-700: #6B21A8;
+    --color-primary-900: #3B0764;
+
+    --color-secondary: #EC4899;
+    --color-secondary-light: #F472B6;
+    --color-secondary-dark: #DB2777;
+
+    --color-error: #DC2626;
+    --color-error-light: #FEF2F2;
+    --color-error-border: #FECACA;
+
+    /* ── Earth Element ────────────────────────── */
+    --color-gold: #F59E0B;
+    --color-gold-light: #FEF3C7;
+    --color-gold-border: #FDE68A;
+    --color-cream: #FFFBEB;
+
+    /* ── Metal Element ────────────────────────── */
+    --color-surface: #FFFFFF;
+
+    /* ── Text ──────────────────────────────────── */
+    --color-heading: #1C1917;
+    --color-body: #44403C;
+    --color-muted: #78716C;
+    --color-subtle: #A8A29E;
+
+    /* ── Fonts ─────────────────────────────────── */
+    --font-heading: var(--font-bricolage), system-ui, sans-serif;
+    --font-body: var(--font-jakarta), system-ui, sans-serif;
+}
+
+/* ── Base Styles ────────────────────────────── */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--color-body);
+    background-color: #FFFFFF;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    color: var(--color-heading);
+    font-weight: 700;
+}
+
+/* ── Focus Styles ───────────────────────────── */
+
+*:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ── Selection ──────────────────────────────── */
+
+::selection {
+    background-color: var(--color-primary-200);
+    color: var(--color-primary-900);
+}
