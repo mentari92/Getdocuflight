@@ -1,6 +1,6 @@
 # GetDocuFlight — AI Visa Predictor
 
-Predict your visa approval chances with AI. Get personalized recommendations to strengthen your application.
+Predict your visa approval chances with AI. Get personalized recommendations and verified flight reservations to strengthen your application.
 
 ## Tech Stack
 

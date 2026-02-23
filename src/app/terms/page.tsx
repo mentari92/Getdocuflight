@@ -8,7 +8,7 @@ export default function TermsPage() {
             <section>
                 <h2 className="text-xl font-bold text-heading mb-3">1. Services Provided</h2>
                 <p>
-                    GetDocuFlight provides AI powered visa prediction assessments and dummy reservation services (flight and hotel) for informational and visa application support purposes.
+                    GetDocuFlight provides AI powered visa prediction assessments and verified reservation services (flight and hotel) for informational and visa application support purposes.
                     Our predictions are based on statistical analysis and AI modeling and do not guarantee visa approval.
                 </p>
             </section>
@@ -17,7 +17,7 @@ export default function TermsPage() {
                 <h2 className="text-xl font-bold text-heading mb-3">2. User Responsibilities</h2>
                 <p>
                     Users are responsible for providing accurate and truthful information when using our services.
-                    The dummy tickets provided are for visa application support and are not valid for actual travel.
+                    The verified reservations provided are for visa application support and are not valid for actual travel.
                 </p>
             </section>
 

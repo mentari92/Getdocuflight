@@ -31,7 +31,7 @@ function getOpenAIClient(): OpenAI | null {
     return _openaiClient;
 }
 
-const SYSTEM_PROMPT = `You are the GetDocuFlight booking assistant. You help users book dummy flight tickets for visa purposes.
+const SYSTEM_PROMPT = `You are the GetDocuFlight booking assistant. You help users book verified flight reservations for visa purposes.
 
 RULES:
 1. Speak in friendly, professional English.

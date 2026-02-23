@@ -112,7 +112,7 @@ export default function AuditResultsDisplay({ result }: AuditResultsDisplayProps
                                 </h4>
                                 <p className="text-sm text-heading opacity-90 mb-4 leading-relaxed">
                                     Our Visa Officer AI noticed you might be missing travel or accommodation documents.
-                                    You can instantly get verifiable dummy reservations for your visa application.
+                                    You can instantly get verified travel reservations for your visa application.
                                 </p>
                                 <div className="flex flex-wrap gap-3">
                                     {needsFlight && !needsHotel && (
@@ -121,7 +121,7 @@ export default function AuditResultsDisplay({ result }: AuditResultsDisplayProps
                                             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary-dark transition-colors shadow-primary/20 shadow-md"
                                         >
                                             <Plane className="w-4 h-4" />
-                                            Order Dummy Flight ($10)
+                                            Order Verified Flight ($10)
                                         </Link>
                                     )}
                                     {needsHotel && (

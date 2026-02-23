@@ -79,7 +79,7 @@ export function bookingConfirmationEmail(booking: {
         html: `
         <div style="font-family: 'Inter', sans-serif; max-width: 560px; margin: 0 auto; padding: 24px;">
             <h2 style="color: #1a1a2e; margin-bottom: 8px;">Halo, ${booking.contactName}! 🎉</h2>
-            <p style="color: #555;">Booking dummy ticket kamu sudah dikonfirmasi.</p>
+            <p style="color: #555;">Reservasi tiket verifikasi kamu sudah dikonfirmasi.</p>
 
             <div style="background: #f8f9ff; border-radius: 12px; padding: 20px; margin: 20px 0;">
                 <p><strong>Booking ID:</strong> ${booking.id.slice(0, 8)}…</p>
@@ -91,7 +91,7 @@ export function bookingConfirmationEmail(booking: {
             </div>
 
             <p style="color: #555; font-size: 13px;">
-                Tim kami akan memproses dummy ticket kamu dan mengirimkannya dalam 1–2 jam kerja.
+                Tim kami akan memproses reservasi tiket kamu dan mengirimkannya dalam 1–2 jam kerja.
             </p>
 
             <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
@@ -100,7 +100,7 @@ export function bookingConfirmationEmail(booking: {
             </p>
         </div>
         `,
-        text: `Halo ${booking.contactName}! Booking dummy ticket kamu sudah dikonfirmasi. Rute: ${booking.departureCity} → ${booking.arrivalCity}. Booking ID: ${booking.id.slice(0, 8)}…`,
+        text: `Halo ${booking.contactName}! Reservasi tiket verifikasi kamu sudah dikonfirmasi. Rute: ${booking.departureCity} → ${booking.arrivalCity}. Booking ID: ${booking.id.slice(0, 8)}…`,
     };
 }
 
@@ -134,7 +134,7 @@ export function deliveryNotificationEmail(booking: {
             </p>
         </div>
         `,
-        text: `Halo ${booking.contactName}! Kabar baik! Dummy ticket kamu sudah siap (DELIVERED). Rute: ${booking.departureCity} → ${booking.arrivalCity}. Booking ID: ${booking.id.slice(0, 8)}…`,
+        text: `Halo ${booking.contactName}! Kabar baik! Reservasi tiket kamu sudah siap (DELIVERED). Rute: ${booking.departureCity} → ${booking.arrivalCity}. Booking ID: ${booking.id.slice(0, 8)}…`,
     };
 }
 

@@ -23,7 +23,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold text-heading mt-8 mb-4">Why Choose Us?</h2>
             <ul className="list-disc pl-6 space-y-2">
                 <li><strong>Confidence:</strong> Know your chances before you spend time and money on official applications.</li>
-                <li><strong>Speed:</strong> Get your dummy tickets and AI analysis typically within 24 hours.</li>
+                <li><strong>Speed:</strong> Get your verified reservations and AI analysis typically within 24 hours.</li>
                 <li><strong>Security:</strong> We use industry standard encryption and data deletion policies to keep your information safe.</li>
             </ul>
         </InfoLayout>
