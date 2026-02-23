@@ -115,7 +115,7 @@ export function deliveryNotificationEmail(booking: {
         html: `
         <div style="font-family: 'Inter', sans-serif; max-width: 560px; margin: 0 auto; padding: 24px;">
             <h2 style="color: #1a1a2e; margin-bottom: 8px;">Halo, ${booking.contactName}! 🚀</h2>
-            <p style="color: #555;">Kabar baik! Dummy ticket kamu sudah siap dan telah diterbitkan.</p>
+            <p style="color: #555;">Kabar baik! Reservasi tiket verifikasi kamu sudah siap dan telah diterbitkan.</p>
 
             <div style="background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 12px; padding: 20px; margin: 20px 0;">
                 <p><strong>Booking ID:</strong> ${booking.id.slice(0, 8)}…</p>
