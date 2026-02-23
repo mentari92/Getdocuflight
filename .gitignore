@@ -47,12 +47,19 @@ yarn-error.log*
 # ── BMAD framework (large, not app code) ────
 _bmad/
 _bmad-output/
+/Brain/
 
 # ── Agent configs (workflow engine) ─────────
 .agent/
+.agents/
+_agent/
+_agents/
 
 # ── Gemini / AI brain artifacts ─────────────
 .gemini/
+
+# ── Logs ──
+logs/
 
 # ── Vercel ──────────────────────────────────
 .vercel

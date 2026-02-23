@@ -18,7 +18,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "GetDocuFlight — AI Visa Predictor",
+  title: "GetDocuFlight — Visa Predictor",
   description:
     "Predict your visa approval chances with AI. Get personalized recommendations to strengthen your application.",
 };

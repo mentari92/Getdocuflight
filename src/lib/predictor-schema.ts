@@ -2,16 +2,10 @@ import { z } from "zod";
 
 // ── Country lists ──────────────────────────────────────────
 
-export const POPULAR_COUNTRIES = [
-    { value: "indonesia", label: "🇮🇩 Indonesia" },
-    { value: "malaysia", label: "🇲🇾 Malaysia" },
-    { value: "singapore", label: "🇸🇬 Singapore" },
-    { value: "thailand", label: "🇹🇭 Thailand" },
-    { value: "philippines", label: "🇵🇭 Philippines" },
-    { value: "vietnam", label: "🇻🇳 Vietnam" },
-    { value: "india", label: "🇮🇳 India" },
-    { value: "china", label: "🇨🇳 China" },
-] as const;
+import { COUNTRIES } from "./countries";
+
+export const POPULAR_COUNTRIES = COUNTRIES;
+export const DESTINATION_COUNTRIES = COUNTRIES;
 
 export const SCHENGEN_COUNTRIES = [
     { value: "france", label: "🇫🇷 France" },
@@ -30,17 +24,6 @@ export const SCHENGEN_COUNTRIES = [
     { value: "denmark", label: "🇩🇰 Denmark" },
     { value: "finland", label: "🇫🇮 Finland" },
     { value: "poland", label: "🇵🇱 Poland" },
-] as const;
-
-export const DESTINATION_COUNTRIES = [
-    ...SCHENGEN_COUNTRIES,
-    { value: "japan", label: "🇯🇵 Japan" },
-    { value: "south_korea", label: "🇰🇷 South Korea" },
-    { value: "united_kingdom", label: "🇬🇧 United Kingdom" },
-    { value: "united_states", label: "🇺🇸 United States" },
-    { value: "canada", label: "🇨🇦 Canada" },
-    { value: "australia", label: "🇦🇺 Australia" },
-    { value: "new_zealand", label: "🇳🇿 New Zealand" },
 ] as const;
 
 export const TRAVEL_HISTORY_OPTIONS = [

@@ -10,6 +10,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getIDRAmount } from "@/lib/currency";
 import { createPayment } from "@/lib/dompetx";
+import { createPolarCheckout } from "@/lib/polar";
 
 const PRICE_USD = 5.0;
 
@@ -26,11 +27,22 @@ export async function POST(request: Request) {
         const userId = session.user.id;
 
         // Validate body
-        const body = await request.json();
-        const { predictionId, paymentMethod } = body as {
-            predictionId?: string;
-            paymentMethod?: string;
-        };
+        let predictionId: string | undefined;
+        let paymentMethod: string | undefined;
+        let gateway: string = "DOMPETX";
+        let body: any;
+
+        try {
+            body = await request.json();
+            predictionId = body.predictionId;
+            paymentMethod = body.paymentMethod;
+            gateway = body.gateway || "DOMPETX";
+        } catch {
+            return NextResponse.json(
+                { error: "Invalid request body" },
+                { status: 400 }
+            );
+        }
 
         if (!predictionId) {
             return NextResponse.json(
@@ -39,26 +51,7 @@ export async function POST(request: Request) {
             );
         }
 
-        // Verify prediction exists, belongs to user, and is unpaid
-        const prediction = await prisma.prediction.findUnique({
-            where: { id: predictionId },
-        });
-
-        if (!prediction || prediction.userId !== userId) {
-            return NextResponse.json(
-                { error: "Prediction not found" },
-                { status: 404 }
-            );
-        }
-
-        if (prediction.isPaid) {
-            return NextResponse.json(
-                { error: "Prediction already paid" },
-                { status: 409 }
-            );
-        }
-
-        // Get IDR conversion
+        // Get IDR conversion before transaction
         let amountIDR: number;
         let exchangeRate: number;
         try {
@@ -71,49 +64,114 @@ export async function POST(request: Request) {
             amountIDR = Math.round(PRICE_USD * exchangeRate);
         }
 
-        // Create Order in DB (PENDING)
-        const order = await prisma.order.create({
-            data: {
-                userId,
-                productType: "AI_PREDICTION",
-                amountUSD: PRICE_USD,
-                amountIDR,
-                exchangeRate,
-                currency: "IDR",
-                status: "PENDING",
-                paymentGateway: "DOMPETX",
-                paymentMethod: paymentMethod || "qris",
-                productId: predictionId,
-                predictions: {
-                    connect: { id: predictionId },
+        // [C2 FIX] Atomic transaction: find prediction + verify + create order
+        const { order, prediction } = await prisma.$transaction(async (tx) => {
+            const foundPrediction = await tx.prediction.findUnique({
+                where: { id: predictionId },
+            });
+
+            if (!foundPrediction || foundPrediction.userId !== userId) {
+                throw new Error("PREDICTION_NOT_FOUND");
+            }
+
+            if (foundPrediction.isPaid) {
+                throw new Error("PREDICTION_ALREADY_PAID");
+            }
+
+            // Check for existing pending order to prevent duplicates
+            const existingOrder = await tx.order.findFirst({
+                where: {
+                    productId: predictionId,
+                    status: "PENDING",
                 },
-            },
+            });
+
+            if (existingOrder) {
+                throw new Error("PAYMENT_ALREADY_PENDING");
+            }
+
+            const newOrder = await tx.order.create({
+                data: {
+                    userId,
+                    productType: "AI_PREDICTION",
+                    amountUSD: PRICE_USD,
+                    amountIDR,
+                    exchangeRate,
+                    currency: "IDR",
+                    status: "PENDING",
+                    paymentGateway: (gateway || "DOMPETX") as any,
+                    paymentMethod: paymentMethod || (gateway === "POLAR" ? "card" : "qris"),
+                    productId: predictionId,
+                    predictions: {
+                        connect: { id: predictionId },
+                    },
+                },
+            });
+
+            return { order: newOrder, prediction: foundPrediction };
         });
 
-        // Call DompetX to create payment
+        // Call appropriate gateway
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-        const payment = await createPayment({
-            orderId: order.id,
-            amountIDR,
-            customerEmail: session.user.email,
-            description: `GetDocuFlight Visa Prediction — ${prediction.toCountry}`,
-            paymentMethod: paymentMethod || "qris",
-            successRedirectUrl: `${appUrl}/dashboard/predictions/${predictionId}`,
-            failureRedirectUrl: `${appUrl}/dashboard/predictions/${predictionId}?payment=failed`,
-        });
+        let payment;
+
+        if (gateway === "POLAR") {
+            payment = await createPolarCheckout({
+                orderId: order.id,
+                amountUSD: PRICE_USD,
+                customerEmail: session.user.email,
+                productName: `Visa Prediction — ${prediction.toCountry}`,
+                successUrl: `${appUrl}/dashboard/predictions/${predictionId}?payment=success`,
+            });
+        } else {
+            payment = await createPayment({
+                orderId: order.id,
+                amountIDR,
+                customerEmail: session.user.email,
+                description: `GetDocuFlight Visa Prediction — ${prediction.toCountry}`,
+                paymentMethod: paymentMethod || "qris",
+                successRedirectUrl: `${appUrl}/dashboard/predictions/${predictionId}`,
+                failureRedirectUrl: `${appUrl}/dashboard/predictions/${predictionId}?payment=failed`,
+            });
+        }
 
         // Update order with paymentRef
         await prisma.order.update({
             where: { id: order.id },
-            data: { paymentRef: payment.paymentRef },
+            data: {
+                paymentRef: (payment as any).paymentRef || (payment as any).id,
+            },
         });
 
+        const paymentUrl = (payment as any).url || (payment as any).paymentUrl;
+
         return NextResponse.json({
-            paymentUrl: payment.paymentUrl,
+            paymentUrl,
             orderId: order.id,
-            expiresAt: payment.expiresAt,
+            expiresAt: (payment as any).expiresAt,
         });
     } catch (error) {
+        // Handle known transaction errors
+        if (error instanceof Error) {
+            if (error.message === "PREDICTION_NOT_FOUND") {
+                return NextResponse.json(
+                    { error: "Prediction not found" },
+                    { status: 404 }
+                );
+            }
+            if (error.message === "PREDICTION_ALREADY_PAID") {
+                return NextResponse.json(
+                    { error: "Prediction already paid" },
+                    { status: 409 }
+                );
+            }
+            if (error.message === "PAYMENT_ALREADY_PENDING") {
+                return NextResponse.json(
+                    { error: "Payment already in progress" },
+                    { status: 409 }
+                );
+            }
+        }
         console.error("[/api/payments/create] Error:", error);
         return NextResponse.json(
             { error: "Failed to create payment. Please try again." },

@@ -49,41 +49,43 @@
     --font-body: var(--font-jakarta), system-ui, sans-serif;
 }
 
-/* ── Base Styles ────────────────────────────── */
+@layer base {
+    /* ── Base Styles ────────────────────────────── */
 
-html {
-    scroll-behavior: smooth;
-}
+    html {
+        scroll-behavior: smooth;
+    }
 
-body {
-    font-family: var(--font-body);
-    color: var(--color-body);
-    background-color: #FFFFFF;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
+    body {
+        font-family: var(--font-body);
+        color: var(--color-body);
+        background-color: #FFFFFF;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--font-heading);
-    color: var(--color-heading);
-    font-weight: 700;
-}
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-heading);
+        color: var(--color-heading);
+        font-weight: 700;
+    }
 
-/* ── Focus Styles ───────────────────────────── */
+    /* ── Focus Styles ───────────────────────────── */
 
-*:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-}
+    *:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
 
-/* ── Selection ──────────────────────────────── */
+    /* ── Selection ──────────────────────────────── */
 
-::selection {
-    background-color: var(--color-primary-200);
-    color: var(--color-primary-900);
+    ::selection {
+        background-color: var(--color-primary-200);
+        color: var(--color-primary-900);
+    }
 }

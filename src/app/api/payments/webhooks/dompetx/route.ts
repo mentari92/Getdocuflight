@@ -5,6 +5,7 @@ import {
 } from "@/lib/dompetx";
 import { cacheExists, cacheSet } from "@/lib/cache";
 import { prisma } from "@/lib/db";
+import { sendBookingConfirmation, sendAdminAlert } from "@/lib/notifications";
 
 // LIMITATION: Idempotency relies on Redis TTL (24h). If DompetX retries
 // after 24h (e.g., system restore), the event could be reprocessed.
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
     // Step 5: Find order by paymentRef
     const order = await prisma.order.findFirst({
         where: { paymentRef: payment_ref },
-        include: { predictions: true },
+        include: { predictions: true, bookings: true },
     });
 
     if (!order) {
@@ -93,13 +94,15 @@ export async function POST(request: Request) {
 
     // Step 6: Process based on event status
     if (status === "PAID") {
+        const paidAt = paid_at ? new Date(paid_at) : new Date();
+
         await prisma.$transaction([
             // Update order status
             prisma.order.update({
                 where: { id: order.id },
                 data: {
                     status: "PAID",
-                    paidAt: paid_at ? new Date(paid_at) : new Date(),
+                    paidAt,
                 },
             }),
 
@@ -115,14 +118,71 @@ export async function POST(request: Request) {
                     },
                 })
             ),
+
+            // Update all linked bookings to PAID
+            ...order.bookings.map((booking) =>
+                prisma.booking.update({
+                    where: { id: booking.id },
+                    data: { status: "PAID" },
+                })
+            ),
         ]);
+        // [M4 FIX] Send notification after successful payment
+        for (const booking of order.bookings) {
+            try {
+                const fullBooking = await prisma.booking.findUnique({
+                    where: { id: booking.id },
+                });
+                if (fullBooking && fullBooking.contactEmail && fullBooking.contactName) {
+                    await sendBookingConfirmation({
+                        id: fullBooking.id,
+                        departureCity: fullBooking.departureCity,
+                        arrivalCity: fullBooking.arrivalCity,
+                        departureDate: fullBooking.departureDate.toISOString().split("T")[0],
+                        returnDate: fullBooking.returnDate?.toISOString().split("T")[0],
+                        tripType: fullBooking.tripType,
+                        passengerCount: fullBooking.passengerCount,
+                        contactName: fullBooking.contactName,
+                        contactEmail: fullBooking.contactEmail,
+                        contactWhatsApp: fullBooking.contactWhatsApp,
+                        contactTelegram: fullBooking.contactTelegram,
+                        preferredNotif: fullBooking.preferredNotif,
+                    });
+
+                    // [NEW] Also notify the admin/owner
+                    await sendAdminAlert({
+                        id: fullBooking.id,
+                        productType: fullBooking.productType,
+                        amountUSD: fullBooking.amountUSD || 0,
+                        amountIDR: fullBooking.amountIDR || undefined,
+                        contactName: fullBooking.contactName,
+                        contactEmail: fullBooking.contactEmail,
+                        departureCity: fullBooking.departureCity,
+                        arrivalCity: fullBooking.arrivalCity,
+                    });
+                }
+            } catch (notifError) {
+                console.error(`[Webhook] Notification failed for booking ${booking.id}:`, notifError);
+                // Don't fail the webhook — notification is best-effort
+            }
+        }
     } else if (status === "FAILED" || status === "EXPIRED") {
-        await prisma.order.update({
-            where: { id: order.id },
-            data: {
-                status: status === "FAILED" ? "FAILED" : "EXPIRED",
-            },
-        });
+        // [H3 FIX] Update both Order AND Booking status on failure
+        await prisma.$transaction([
+            prisma.order.update({
+                where: { id: order.id },
+                data: {
+                    status: status === "FAILED" ? "FAILED" : "EXPIRED",
+                },
+            }),
+            // Update all linked bookings to CANCELLED
+            ...order.bookings.map((booking) =>
+                prisma.booking.update({
+                    where: { id: booking.id },
+                    data: { status: "CANCELLED" },
+                })
+            ),
+        ]);
     }
 
     // Step 7: Mark event as processed (idempotency)

@@ -1,9 +1,9 @@
 # Architecture Document
-# GetDocuFlight – AI Visa Predictor
+# GetDocuFlight – AI Visa Predictor & Travel Tools
 
-**Version:** 2.0  
+**Version:** 3.0  
 **Status:** Final — Ready for Development  
-**Updated:** Document upload (Opsi C), 6-layer security, MinIO active, GPT-4o vision
+**Updated:** 3 products (AI Predictor $5, Dummy Flight $10, Bundle $20), order form `/order`, Live Chat, guest checkout, 6-layer security
 
 ---
 
@@ -16,27 +16,20 @@ Browser / Mobile
       ↓
   Next.js App (App Router) — port 3000
       ↓
-  Auth.js (JWT session)
+  Auth.js (JWT session) — required for AI Predictor, optional for /order
       ↓
-  ┌──────────────┬──────────────┬──────────────┬──────────────┐
-  │              │              │              │              │
-PostgreSQL 16  Redis          OpenAI API    DompetX API    MinIO
-(Prisma ORM)  (Cache/Queue)  (GPT-4o)      (Payment)      (Encrypted Docs)
-                                              ↓
-                                        DompetX Webhook
-                                              ↓
-                                        Next.js /api/payments/webhooks/dompetx
-                                              ↓
-                                        Resend (Email)
+  ┌──────────────┬──────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
+  │              │              │              │              │              │              │
+PostgreSQL 16  Redis          OpenAI API    DompetX API    Polar.sh API   MinIO          Resend         PostHog
+(Prisma ORM)  (Cache/Queue)  (GPT-4o)      (Local Pay)    (Credit Card)  (Encrypted)    (Email)        (Analytics)
 
-Document Upload Flow:
-Browser → Nginx → Next.js API → ClamAV scan → AES-256 encrypt → MinIO
-                                                        ↓
-                                              OpenAI GPT-4o (memory only)
-                                                        ↓
-                                              PostgreSQL (extracted data only)
-                                                        ↓
-                                              Redis (deletion job queue, TTL 24h)
+Flows:
+1. AI Visa Predictor: Form → Scoring Engine → Free Preview → Pay $5 → Full Result
+2. Dummy Order:        /order form → Pay (DompetX/Polar) → Admin dashboard → CS delivers
+3. Live Chat:          Widget → PostgreSQL → Admin /admin/chat → Reply
+4. Document Upload:    ClamAV → AES-256 → MinIO → GPT-4o vision → Auto-delete 24h
+5. Payment Mocking:    Local interceptor (`dompetx.ts`) → `/mock-payment` UI → Synthetic Webhook
+6. Smart Navigator:    Public Landing → Form → OpenAI → Result + Itinerary → Lead Capture
 ```
 
 ---
@@ -48,13 +41,22 @@ getdocuflight/
 ├── app/
 │   ├── (marketing)/
 │   │   └── visa-predictor/
-│   │       └── page.tsx               ← Landing page + form
+│   │       └── page.tsx               ← Landing page + AI Predictor form
+│   ├── (public)/
+│   │   └── order/
+│   │       └── page.tsx               ← Dummy ticket/hotel order form (NO LOGIN)
 │   ├── (dashboard)/
 │   │   └── dashboard/
 │   │       ├── predictions/
 │   │       │   └── page.tsx           ← Prediction history
 │   │       └── predictions/[id]/
 │   │           └── page.tsx           ← Full result + upload CTA
+│   ├── (admin)/
+│   │   └── admin/
+│   │       ├── chat/
+│   │       │   └── page.tsx           ← Live Chat admin panel
+│   │       └── orders/
+│   │           └── page.tsx           ← Dummy ticket/hotel orders dashboard
 │   └── api/
 │       ├── predict/
 │       │   └── route.ts               ← POST: scoring engine (form-based)
@@ -65,24 +67,43 @@ getdocuflight/
 │       │   │   └── route.ts           ← POST: file upload endpoint
 │       │   └── [fileId]/
 │       │       └── route.ts           ← DELETE: manual delete endpoint
-│       └── payments/
-│           ├── create/
-│           │   └── route.ts           ← POST: initiate DompetX payment
-│           └── webhooks/
-│               └── dompetx/
-│                   └── route.ts       ← POST: webhook handler
+│       ├── payments/
+│       │   ├── create/
+│       │   │   └── route.ts           ← POST: initiate payment (DompetX or Polar.sh)
+│       │   └── webhooks/
+│       │       ├── dompetx/
+│       │       │   └── route.ts       ← POST: DompetX webhook handler
+│       │       └── polar/
+│       │           └── route.ts       ← POST: Polar.sh webhook handler
+│       ├── mock-payment/
+│       │   └── route.ts               ← POST: Internal mock gateway (Dev Only)
+│       ├── tools/
+│       │   └── visa-checker/
+│       │       └── route.ts       ← POST: OpenAI-powered visa checker + itinerary
+│       ├── dummy-orders/
+│       │   └── route.ts               ← POST: create dummy ticket/hotel order (NO AUTH)
+│       └── livechat/
+│           ├── messages/
+│           │   └── route.ts           ← GET/POST: chat messages
+│           └── conversations/
+│               └── route.ts           ← GET: admin conversations list
 │
 ├── components/
-│   └── predictor/
-│       ├── PredictorForm.tsx
-│       ├── PredictorTeaser.tsx        ← Free 1-2 paragraph preview
-│       ├── PredictorResult.tsx        ← Full result (score + factors + recommendations)
-│       ├── RecommendationPanel.tsx    ← General summary + specific breakdown
-│       ├── PaywallCard.tsx
-│       ├── DocumentUploadConsent.tsx  ← Consent screen (4 checkboxes)
-│       ├── DocumentUploadZone.tsx     ← File upload UI
-│       ├── DocumentCountdown.tsx      ← "Dihapus dalam X jam"
-│       └── DocumentDeleteButton.tsx
+│   ├── predictor/
+│   │   ├── PredictorForm.tsx
+│   │   ├── PredictorTeaser.tsx        ← Free 1-2 paragraph preview
+│   │   ├── PredictorResult.tsx        ← Full result (score + factors + recommendations)
+│   │   ├── RecommendationPanel.tsx    ← General summary + specific breakdown
+│   │   ├── PaywallCard.tsx
+│   │   ├── DocumentUploadConsent.tsx  ← Consent screen (4 checkboxes)
+│   │   ├── DocumentUploadZone.tsx     ← File upload UI
+│   │   ├── DocumentCountdown.tsx      ← "Dihapus dalam X jam"
+│   │   └── DocumentDeleteButton.tsx
+│   ├── order/
+│   │   └── DummyOrderForm.tsx         ← Order form (product select + details + payment)
+│   └── livechat/
+│       ├── LiveChat.tsx               ← Floating chat widget
+│       └── LiveChatWrapper.tsx        ← Client wrapper (dynamic import)
 │
 └── lib/
     ├── scoring.ts                     ← Rule-based scoring logic
@@ -132,12 +153,12 @@ getdocuflight/
 | id | String (cuid) | Primary key |
 | userId | String | FK → users.id |
 | productType | Enum | AI_PREDICTION |
-| amountUSD | Float | Always 5.00 |
+| amountUSD | Float | 5.00 for predictor, 10.00 for single, 20.00 for bundle |
 | amountIDR | Float | Calculated at checkout |
 | exchangeRate | Float | Rate used at checkout |
 | currency | String | Default "IDR" |
 | status | Enum | PENDING, WAITING_PAYMENT, PAID, COMPLETED, EXPIRED |
-| paymentGateway | Enum | DOMPETX |
+| paymentGateway | Enum | DOMPETX, POLAR |
 | paymentMethod | String? | "qris", "virtual_account_bca", etc. |
 | paymentRef | String? | DompetX reference ID |
 | productId | String? | prediction.id |
@@ -185,13 +206,39 @@ getdocuflight/
 | ipAddress | String | User IP at time of action |
 | timestamp | DateTime | Auto |
 
+### Table: `dummy_orders`
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | String (cuid) | Primary key |
+| productType | Enum | DUMMY_FLIGHT, DUMMY_BUNDLE |
+| fullName | String | Passenger full name (as per passport) |
+| email | String | Customer email for delivery |
+| phone | String? | WhatsApp / phone number |
+| flightFrom | String? | Departure city (if flight/bundle) |
+| flightTo | String? | Arrival city (if flight/bundle) |
+| departureDate | DateTime? | Flight departure date |
+| returnDate | DateTime? | Flight return date (if roundtrip) |
+| isRoundTrip | Boolean | Default: false |
+| hotelCity | String? | Hotel city (if hotel/bundle) |
+| checkIn | DateTime? | Hotel check-in date |
+| checkOut | DateTime? | Hotel check-out date |
+| amountUSD | Float | 10.00 or 20.00 (bundle) |
+| status | Enum | PENDING, PAID, PROCESSING, DELIVERED, EXPIRED |
+| paymentRef | String? | DompetX reference ID |
+| orderId | String? | FK → orders.id (payment link) |
+| createdAt | DateTime | Auto |
+| deliveredAt | DateTime? | When CS sent the document |
+
+**Note:** No `userId` FK — this table supports guest checkout (no login required).
+
 ### Enums
 
 ```prisma
 enum RiskLevel { LOW MEDIUM HIGH }
 enum OrderStatus { PENDING WAITING_PAYMENT PAID COMPLETED FAILED EXPIRED }
-enum ProductType { AI_PREDICTION }
-enum PaymentGateway { DOMPETX STRIPE }
+enum ProductType { AI_PREDICTION DUMMY_FLIGHT DUMMY_BUNDLE }
+enum PaymentGateway { DOMPETX POLAR }
 enum DocumentType { BANK_STATEMENT EMPLOYMENT_LETTER SALARY_SLIP PASSPORT_STAMPS }
 enum DocumentStatus { PROCESSING ANALYZED DELETED }
 ```
@@ -237,6 +284,46 @@ enum DocumentStatus { PROCESSING ANALYZED DELETED }
 4. Call DompetX API → get payment instructions
 5. Set `prediction.uploadWindowExpiresAt = now + 24h`
 6. Return payment instructions
+
+---
+
+### POST `/api/dummy-orders`
+**Auth:** NOT required (guest checkout)
+
+**Request:**
+```json
+{
+  "productType": "DUMMY_FLIGHT | DUMMY_BUNDLE",
+  "fullName": "John Doe",
+  "email": "john@example.com",
+  "phone": "+6281234567890",
+  "flightFrom": "Jakarta",
+  "flightTo": "Tokyo",
+  "departureDate": "2026-04-15",
+  "returnDate": "2026-04-25",
+  "isRoundTrip": true,
+  "hotelCity": "Tokyo",
+  "checkIn": "2026-04-15",
+  "checkOut": "2026-04-25"
+}
+```
+
+**Server logic:**
+1. Validate via Zod (conditional: flight fields required if FLIGHT/BUNDLE, hotel fields if HOTEL/BUNDLE)
+2. Calculate amount: $10 (single) or $20 (bundle)
+3. Create DummyOrder record (status: PENDING)
+4. Create Order record (for DompetX payment)
+5. Call DompetX API → get payment instructions
+6. Return payment instructions + orderId
+
+**Response:**
+```json
+{
+  "dummyOrderId": "clx...",
+  "amount": { "amountUSD": 10.00, "amountIDR": 167804 },
+  "paymentInstructions": { "method": "qris", "qrCode": "..." }
+}
+```
 
 ---
 
@@ -428,3 +515,12 @@ Reason: Reduces friction at payment point. User gets immediate value (full resul
 
 ### ADR-10: Per-File AES-256 Encryption Key
 Reason: If one key is compromised, only that file is exposed. Shared key = all files exposed. Additional cost: zero (Node.js crypto built-in).
+
+### ADR-11: Guest Checkout for Dummy Ticket/Hotel
+Reason: Dummy ticket/hotel orders don't involve sensitive personal data or documents. Requiring login adds friction and reduces conversion. Guest checkout via email is sufficient for delivery and tracking. AI Visa Predictor still requires login because it handles sensitive document data.
+
+### ADR-13: Polar.sh for Credit Card Payments
+Reason: Polar.sh provides a beautiful, Stripe-backed checkout with lower overhead for small SaaS than direct Stripe integration. It handles international payments and tax compliance effortlessly.
+
+### ADR-14: Instrumented Local Payment Mocking
+Reason: To avoid hitting real payment APIs during local development and to allow full e2e testing of webhooks without public tunneling (ngrok). `dompetx.ts` intercepts dummy keys and redirects to a local `/mock-payment` sandbox.

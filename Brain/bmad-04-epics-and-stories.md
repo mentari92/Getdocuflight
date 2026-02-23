@@ -1,9 +1,9 @@
 # Epics & Stories
 # GetDocuFlight – AI Visa Predictor
 
-**Version:** 2.0  
+**Version:** 3.0  
 **Status:** Final — Ready for Development  
-**Updated:** Document upload (Opsi C), consent screen, re-analysis flow, auto-delete
+**Updated:** 3 products (AI Predictor $5, Dummy Flight $10, Bundle $20), Live Chat, order form, document upload
 
 ---
 
@@ -15,8 +15,9 @@
 | Epic 2 | Predictor Core (Form + Free Preview) | 2.1 – 2.3 | Must Have |
 | Epic 3 | Payment & Full Result | 3.1 – 3.3 | Must Have |
 | Epic 4 | Document Upload & Re-Analysis | 4.1 – 4.4 | Must Have |
+| Epic 5 | Live Chat & Dummy Flight/Bundle | 5.1 – 5.5 | Must Have |
 
-**Build order:** Epic 1 → Epic 2 → Epic 3 → Epic 4
+**Build order:** Epic 1 → Epic 2 → Epic 3 → Epic 4 → Epic 5
 
 ---
 
@@ -70,7 +71,7 @@
 - [ ] `lib/dompetx.ts` — DompetX API client (create payment, verify webhook HMAC)
 - [ ] `lib/cache.ts` — Redis helpers (get, set, delete, TTL)
 - [ ] freecurrencyapi.com integrated, result cached Redis key `fx:USD:IDR` TTL 1 hour
-- [ ] Function `getIDRAmount(5.00)` returns `{ amountIDR, exchangeRate }`
+- [ ] Function `getIDRAmount(10.00)` returns `{ amountIDR, exchangeRate }`
 - [ ] DompetX webhook endpoint created: `/api/payments/webhooks/dompetx`
 - [ ] HMAC signature validation on webhook
 - [ ] Idempotent webhook handler (same event processed only once)
@@ -128,7 +129,7 @@
 - [ ] Risk level badge hidden (or shown only as color without label)
 - [ ] Factors section hidden with blur overlay
 - [ ] Recommendations section hidden
-- [ ] CTA button: "Lihat Hasil Lengkap + Saran Perbaikan → $5.00 (Rp ~83.000\*)"
+- [ ] CTA button: "Unlock Full Analysis → $5"
 - [ ] Note: "\*Jumlah IDR berdasarkan kurs hari ini"
 - [ ] UI looks compelling — teaser feels like it's hiding important information
 
@@ -139,14 +140,14 @@
 ### Story 3.1: Payment Flow (DompetX)
 
 **As a** logged-in user  
-**I want to** pay $5.00 in IDR  
+**I want to** pay $5  
 **So that** I can unlock my full prediction result
 
 **Acceptance Criteria:**
 - [ ] Clicking CTA shows payment modal with current IDR equivalent
-- [ ] Display: "Rp 83.902 (kurs: 1 USD = Rp 16.780)"
+- [ ] Display: "$5 USD"
 - [ ] User selects payment method (QRIS / VA / e-Wallet)
-- [ ] `POST /api/payments/create` creates Order with `amountUSD: 5.00`, `amountIDR`, `exchangeRate`
+- [ ] `POST /api/payments/create` creates Order with `amountUSD: 5.00`
 - [ ] Payment instructions shown (QR code or VA number)
 - [ ] DompetX webhook received → Order status → COMPLETED
 - [ ] `prediction.isPaid = true` after payment
@@ -308,6 +309,10 @@ Week 4:
 ☐ Story 4.3 — Document upload UI
 ☐ Story 4.4 — Re-analysis result
 
+Week 5:
+☐ Story 5.1 — Live Chat (widget + admin panel)
+☐ Story 5.2 — Order Form + Payment for Dummy Flight ($10) & Bundle ($20)
+
 Before Launch:
 ☐ Privacy Policy published (mentions GDPR server + OpenAI sub-processor)
 ☐ OpenAI DPA signed
@@ -315,3 +320,119 @@ Before Launch:
 ☐ Test auto-delete job fires correctly at 24h
 ☐ Test manual delete clears all: MinIO + DB key + Redis job
 ```
+
+---
+
+## Epic 5: Live Chat & Dummy Flight/Bundle
+
+### Story 5.1: Live Chat Widget & Admin Panel
+
+**As a** visitor  
+**I want to** chat with customer service directly on the website  
+**So that** I can ask questions and order dummy tickets/hotel
+
+**Acceptance Criteria:**
+- [ ] Floating chat bubble visible on all public pages (bottom-right)
+- [ ] Click opens chat panel with name input
+- [ ] After entering name, visitor can send and receive messages
+- [ ] Messages stored in PostgreSQL (ChatConversation + ChatMessage tables)
+- [ ] Polling every 4 seconds for real-time feel
+- [ ] Visitor ID persisted in localStorage across sessions
+- [ ] Admin panel at `/admin/chat` lists all conversations
+- [ ] Admin can select conversation and reply
+- [ ] Admin-only access (role check)
+
+---
+
+### Story 5.2: Order Form + Payment for Dummy Ticket & Hotel
+
+**As a** visitor  
+**I want to** fill out an order form and pay for a dummy flight ticket or hotel reservation  
+**So that** I get valid documents for my visa application without needing to log in
+
+**Acceptance Criteria:**
+- [ ] Order form at `/order` is public (no login required)
+- [ ] Step 1: Select product — Flight only ($10) / Bundle Flight+Hotel ($20)
+- [ ] Step 2: Passenger details — full name, email, phone/WhatsApp
+- [ ] Step 3: Flight details (always shown) — departure city, arrival city, departure date, return date, one-way/round-trip
+- [ ] Step 4: Hotel details (shown if Bundle) — city, check-in, check-out
+- [ ] Step 5: Submit → redirect to DompetX payment
+- [ ] Payment confirmed → DummyOrder created in admin dashboard (status: PAID)
+- [ ] Admin can see all dummy orders at `/admin/orders`
+- [ ] CS processes order → marks as DELIVERED → customer notified
+- [ ] Dummy flight ticket delivered with valid PNR via email within 1–2 hours
+- [ ] Bundle: both flight ticket and hotel reservation delivered via email within 1–2 hours
+- [ ] Live Chat auto-greeting includes link to `/order` form
+- [ ] Landing page CTA also links to `/order`
+
+---
+
+### Story 5.3: Document Auditor Upsell Links
+
+**As a** business owner
+**I want** the Document Auditor to suggest our Dummy Ticket & Hotel services when users are missing travel documents
+**So that** we can upsell our core product to users who clearly need it
+
+**Acceptance Criteria:**
+- [ ] When the AI gap analysis flags missing flight/ticket/itinerary documents, display a prominent CTA to book a dummy flight
+- [ ] When the AI gap analysis flags missing hotel/accommodation documents, display a prominent CTA to book a dummy hotel bundle
+- [ ] Links should point directly to `/order`
+- [ ] UI should integrate naturally into the `AuditResultsDisplay` component without breaking existing layout
+
+---
+
+### Story 5.4: Searchable City Dropdowns
+
+**As a** visitor
+**I want** to search for departure, arrival, and hotel cities using an autocomplete dropdown like on dummy-tickets.com
+**So that** I can easily find my specific route and not just rely on a small static list
+
+**Acceptance Criteria:**
+- [x] Departure City, Arrival City, and Hotel City inputs are replaced with a searchable combobox element.
+- [x] Users can type to filter a comprehensive list of major international cities/airports (e.g., "Jakarta (CGK)").
+- [x] The dropdown shows "Popular Cities" when the input is focused but empty.
+- [x] The dropdown closes when clicking outside or selecting an option.
+- [x] The component matches the visual Bazi aesthetic of the current order form.
+
+---
+
+### Story 5.4b: Global Countries in Searchable Dropdown
+
+**As a** visitor
+**I want** to be able to search for and select any country in the world, not just specific cities
+**So that** I can order dummy tickets for global routes where my specific city might not be listed
+
+**Acceptance Criteria:**
+- [x] The `COUNTRIES` list (190+ countries) is merged into the autocomplete dropdown's dataset.
+- [x] Users can type a country (e.g., "Japan") and select the country directly (e.g., "🇯🇵 Japan").
+- [x] The UI gracefully handles list items that are countries (no airport code needed).
+- [x] The dropdown search logic works across both specific cities and general countries simultaneously.
+
+### Story 5.5: Smart Navigator (Lead Magnet)
+
+**As a** visitor
+**I want** to check my visa requirements and get a sample travel itinerary for free
+**So that** I can plan my trip and see the value of GetDocuFlight's premium services
+
+**Acceptance Criteria:**
+- [x] Dedicated page at `/smart-navigator` using the premium Bazi aesthetic.
+- [x] Form with Nationality, Destination, and optional Email input.
+- [x] Integration with GPT-4o to generate both visa requirements and a 7-day itinerary.
+- [x] Result is logged to the `FreeToolsUsage` table for lead generation.
+- [x] Prominent "Get Official Dummy Ticket" CTA shown after the AI result.
+- [x] Mobile-responsive layout for easy access on the go.
+
+### Epic 6: Analytics & Optimization
+
+### Story 6.1: PostHog Analytics Integration
+**As a** founder
+**I want** to track user behavior and conversion funnels
+**So that** I can optimize the product and maximize revenue
+
+**Acceptance Criteria:**
+- [x] PostHog integrated with Next.js App Router via instrumentation.
+- [x] Session Recording enabled for all public and dashboard pages.
+- [x] Type-safe event registry (`analytics.ts`) implemented.
+- [x] Server-side event capture supported via PostHog Node SDK.
+- [x] User identity linked between NextAuth and PostHog.
+- [x] Autocapture and Heatmaps functional.

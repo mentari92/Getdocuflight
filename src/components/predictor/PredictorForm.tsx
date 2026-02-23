@@ -149,7 +149,7 @@ export default function PredictorForm() {
 
             if (!response.ok) {
                 throw new Error(
-                    data.error || "Something went wrong. Please try again."
+                    data.details || data.error || "Something went wrong. Please try again."
                 );
             }
 

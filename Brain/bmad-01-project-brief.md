@@ -1,8 +1,8 @@
-# Project Brief: GetDocuFlight – AI Visa Predictor
+# Project Brief: GetDocuFlight – AI Visa Predictor & Travel Tools
 
-**Version:** 2.0  
+**Version:** 3.0  
 **Status:** Final — Ready for Development  
-**Updated:** Includes document upload flow, free/paid tier logic, security architecture, compliance
+**Updated:** 3 products (AI Predictor $5, Dummy Flight $10, Bundle $20), order form, live chat, document upload, compliance
 
 ---
 
@@ -16,11 +16,36 @@ The result: applicants waste money on visa fees, flights, and accommodation book
 
 ## Solution
 
-An AI-powered visa approval predictor that:
+A travel support platform with 3 core products:
+
+### Product 1: AI Visa Predictor ($5)
 1. Takes a user's profile as input via form (nationality, destination, finances, travel history)
 2. Returns a **1–2 paragraph free preview** to create curiosity
-3. Unlocks **full results + personalized recommendations** behind a $5.00 paywall
+3. Unlocks **full results + personalized recommendations** behind a **$5 paywall**
 4. Optionally allows document upload within 24 hours post-payment for **higher-accuracy re-analysis**
+
+### Product 2: Dummy Flight Ticket ($10)
+- Flight reservation with **valid PNR** for visa application purposes
+- Ordered via **order form at `/order`** (no login required)
+- Link shared from Live Chat + landing page
+- **Payment via DompetX (Local) or Polar.sh (Credit Card)**
+- CS processes order → delivered within 1–2 hours via email
+
+### Product 3: Bundle — Dummy Flight + Hotel ($20)
+- Flight reservation + hotel booking confirmation in one order
+- Ordered via **order form at `/order`** (no login required)
+- Single payment of $20 via DompetX or Polar.sh
+- CS processes order → both documents delivered within 1–2 hours via email
+
+### Product 4: Smart Navigator (FREE)
+- **Lead Magnet** to drive traffic and build trust
+- Combines **Visa Checker** (global requirements) + **AI Itinerary Generator**
+- Results delivered instantly via OpenAI
+- Optional email capture for lead generation (saved to `FreeToolsUsage` table)
+
+### Authentication Rules
+- **AI Visa Predictor:** Login/signup **required** (data keamanan user)
+- **Dummy Flight / Bundle:** **No login required** (guest checkout via form)
 
 ---
 
@@ -36,52 +61,66 @@ An AI-powered visa approval predictor that:
 
 ## MVP Scope
 
-The MVP covers **AI Visa Predictor only** — not the full GetDocuFlight platform.
-
 **In scope:**
 - User registration and login (email)
-- Visa predictor form (10 input fields)
-- Rule-based + AI scoring engine (GPT-4o for document vision support)
-- **Free preview:** 1–2 paragraph teaser result (no score, no breakdown)
-- **Paid full result** ($5.00): approval score, factor breakdown, general summary + specific recommendations
-- **Document upload (Opsi C):** After payment, user can upload documents within 24 hours to trigger re-analysis for higher accuracy
-- Document types allowed: rekening koran, surat keterangan kerja, slip gaji, halaman visa/cap paspor
-- **No upload:** KTP, NIK, paspor halaman biodata — tidak diperlukan
-- Email delivery of result via Resend
+- **AI Visa Predictor ($5):**
+  - Visa predictor form (10 input fields)
+  - Rule-based + AI scoring engine (GPT-4o for document vision support)
+  - **Free preview:** 1–2 paragraph teaser result (no score, no breakdown)
+  - **Paid full result** ($5): approval score, factor breakdown, general summary + specific recommendations
+  - **Document upload:** After payment, user can upload documents within 24 hours to trigger re-analysis for higher accuracy
+  - Document types allowed: rekening koran, surat keterangan kerja, slip gaji, halaman visa/cap paspor
+  - **No upload:** KTP, NIK, paspor halaman biodata — tidak diperlukan
+- **Dummy Flight Ticket ($10):** ordered via order form at `/order`, valid PNR, delivered 1–2 hours
+- **Bundle Flight + Hotel ($20):** both documents ordered in one form, delivered 1–2 hours
+- **Live Chat:** customer service widget for ordering support and general inquiries
+- Email delivery of prediction result via Resend
 - User dashboard: prediction history + re-access paid results + document upload CTA
 - Consent screen before any document upload (UU PDP + GDPR compliant)
 - Auto-delete documents within 24 hours after re-analysis completes
+- **Gateway Support:** Dual-gateway (DompetX for Indonesia, Polar.sh for Credit Card)
+- **Developer Sandbox:** Instrumented local payment mocking for zero-cost dev testing
 
 **Out of scope (later phases):**
 - Free visa checker
-- Dummy ticket booking
-- Stripe (international payments)
 - Blog / content
 
 ---
 
 ## Business Model
 
-**Free:**
+### AI Visa Predictor
+
+**Free tier:**
 - Submit form → AI generates result
 - See 1–2 paragraph teaser only (no score, no breakdown, no recommendations)
 - Teaser hints at key issues but doesn't reveal them explicitly
-- CTA: *"Lihat hasil lengkap + saran perbaikan → $5.00"*
+- CTA: *"Unlock Full Analysis → $5"*
 
-**Paid — $5.00 USD:**
-- Charged in IDR dynamically at checkout (kurs harian via freecurrencyapi.com)
-- Indonesian users: DompetX (VA, QRIS, GoPay, OVO, DANA, ShopeePay)
-- International users: Stripe (credit/debit card)
+**Paid tier — $5 USD:**
+- Payment via DompetX (VA, QRIS, GoPay, OVO, DANA, ShopeePay)
 - **Immediately after payment:** Full result from form data
   - Approval score (0–100)
   - Risk level badge (LOW / MEDIUM / HIGH)
   - 3–5 factors with impact analysis
-  - **Saran perbaikan — dua format:**
-    - Summary general: "3 hal utama yang perlu diperkuat sebelum apply"
-    - Breakdown spesifik per faktor: "Saldo tabungan kamu Rp 45 juta, untuk visa Schengen sebaiknya minimal Rp 70 juta. Tunda apply 2–3 bulan."
+  - Saran perbaikan (general summary + specific per-factor recommendations)
 - **Within 24 hours:** User can upload documents for re-analysis
   - Upload trigger: re-run AI with document context → updated score + revised recommendations
   - Documents added: rekening koran (highest value), surat kerja, slip gaji, halaman visa/cap paspor
+
+### Dummy Flight Ticket — $10 USD
+- Customer fills order form at `/order` (no login, guest checkout)
+- Selects product: Flight only ($10) or Bundle Flight + Hotel ($20)
+- Fills passenger + flight details
+- **Pays immediately via DompetX** after form submission
+- CS processes order → delivers dummy ticket with valid PNR via email
+- Delivered within 1–2 hours
+
+### Bundle (Flight + Hotel) — $20 USD
+- Customer selects Bundle option at `/order`
+- Fills both flight and hotel details in one form
+- Single payment of $20 via DompetX
+- Both documents delivered within 1–2 hours
 
 ---
 

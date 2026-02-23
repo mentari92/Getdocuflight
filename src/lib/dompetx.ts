@@ -59,6 +59,22 @@ export async function createPayment(
 ): Promise<CreatePaymentResult> {
     const { apiKey, baseUrl } = getConfig();
 
+    // [MOCK INTERCEPTOR] If using dummy dev keys, route to our local sandbox UI instead of failing
+    if (apiKey.includes("not-real") || baseUrl.includes("sandbox")) {
+        console.log("🛠️ [DompetX Mock] Intercepting payment creation for local dev sandbox.");
+
+        const appUrl = "http://localhost:3000";
+        // Convert the success URL to be passed cleanly via URL search params
+        const successUrl = encodeURIComponent(params.successRedirectUrl || `${appUrl}/order/${params.orderId}`);
+        const mockRef = `mock_${params.orderId}_${Date.now()}`;
+
+        return {
+            paymentUrl: `${appUrl}/mock-payment?orderId=${params.orderId}&amount=${params.amountIDR}&ref=${mockRef}&successUrl=${successUrl}`,
+            paymentRef: mockRef,
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        };
+    }
+
     const response = await fetch(`${baseUrl}/payments`, {
         method: "POST",
         headers: {
@@ -124,4 +140,16 @@ export function verifyWebhookSignature(
         // If buffers have different lengths, timingSafeEqual throws
         return false;
     }
+}
+
+/**
+ * [MOCK TOOL] Generate a valid HMAC signature for a simulated webhook payload.
+ * Used exclusively by the local dev sandbox to bypass real DompetX infrastructure.
+ */
+export function signMockWebhook(rawBody: string): string {
+    const { webhookSecret } = getConfig();
+    return crypto
+        .createHmac("sha256", webhookSecret)
+        .update(rawBody, "utf8")
+        .digest("hex");
 }

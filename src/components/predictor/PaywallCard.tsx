@@ -18,10 +18,10 @@ interface PaywallCardProps {
 }
 
 const TRUST_SIGNALS = [
-    { icon: "🔒", text: "Enkripsi AES-256" },
-    { icon: "🇪🇺", text: "Server GDPR Eropa" },
-    { icon: "🤖", text: "Tidak dibaca manusia" },
-    { icon: "🗑️", text: "Dihapus otomatis 24 jam" },
+    { icon: "🔒", text: "AES-256 Encryption" },
+    { icon: "🇪🇺", text: "GDPR-Compliant EU Servers" },
+    { icon: "🤖", text: "No human reads your data" },
+    { icon: "🗑️", text: "Auto-deleted after 24 hours" },
 ];
 
 export default function PaywallCard({
@@ -43,39 +43,39 @@ export default function PaywallCard({
                 {/* Header */}
                 <div className="text-center mb-6">
                     <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold mb-3">
-                        ✨ HASIL LENGKAP TERSEDIA
+                        ✨ FULL RESULTS AVAILABLE
                     </div>
                     <h3 className="text-xl sm:text-2xl font-extrabold text-heading font-heading">
-                        Lihat Hasil Lengkap +<br />
-                        Saran Perbaikan
+                        View Full Results +<br />
+                        Improvement Recommendations
                     </h3>
                     <p className="text-sm text-muted mt-2 max-w-sm mx-auto">
-                        Dapatkan skor persetujuan, analisis detail per faktor, dan
-                        langkah konkret untuk meningkatkan peluang visa kamu.
+                        Get your approval score, detailed per-factor analysis, and
+                        actionable steps to improve your visa chances.
                     </p>
                 </div>
 
                 {/* What You Get */}
                 <div className="bg-white/60 rounded-xl p-4 mb-6 space-y-2">
                     <div className="flex items-center gap-2 text-sm text-body">
-                        <span className="text-green-500">✓</span>
-                        Skor persetujuan akurat (0–100)
+                        <span className="text-primary">✓</span>
+                        Accurate approval score (0–100)
                     </div>
                     <div className="flex items-center gap-2 text-sm text-body">
-                        <span className="text-green-500">✓</span>
-                        Tingkat risiko (LOW / MEDIUM / HIGH)
+                        <span className="text-primary">✓</span>
+                        Risk level (LOW / MEDIUM / HIGH)
                     </div>
                     <div className="flex items-center gap-2 text-sm text-body">
-                        <span className="text-green-500">✓</span>
-                        Breakdown faktor positif & negatif
+                        <span className="text-primary">✓</span>
+                        Positive & negative factor breakdown
                     </div>
                     <div className="flex items-center gap-2 text-sm text-body">
-                        <span className="text-green-500">✓</span>
-                        Saran perbaikan dengan langkah konkret
+                        <span className="text-primary">✓</span>
+                        Improvement recommendations with concrete steps
                     </div>
                     <div className="flex items-center gap-2 text-sm text-body">
-                        <span className="text-green-500">✓</span>
-                        Upload dokumen untuk re-analisis (24 jam)
+                        <span className="text-primary">✓</span>
+                        Document upload for re-analysis (24 hours)
                     </div>
                 </div>
 
@@ -90,11 +90,11 @@ export default function PaywallCard({
                     <p className="text-sm text-muted mt-1">
                         Rp {formattedIDR}{" "}
                         <span className="text-xs">
-                            (kurs: 1 USD = Rp {formattedRate})
+                            (rate: 1 USD = Rp {formattedRate})
                         </span>
                     </p>
                     <p className="text-xs text-subtle mt-0.5">
-                        *Jumlah IDR berdasarkan kurs hari ini
+                        *IDR amount based on today&apos;s exchange rate
                     </p>
                 </div>
 
@@ -103,7 +103,7 @@ export default function PaywallCard({
                     onClick={() => setShowModal(true)}
                     className="w-full py-4 bg-primary hover:bg-primary-dark text-white font-bold text-base rounded-xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                 >
-                    Lihat Hasil Lengkap →
+                    View Full Results →
                 </button>
 
                 {/* Trust Signals */}
@@ -121,8 +121,8 @@ export default function PaywallCard({
 
                 {/* Disclaimer */}
                 <p className="text-[10px] text-subtle text-center mt-4 leading-relaxed">
-                    Hasil ini bersifat indikatif dan bukan jaminan persetujuan visa.
-                    Pembayaran diproses melalui DompetX.
+                    This result is indicative and does not guarantee visa approval.
+                    Payment processed via DompetX.
                 </p>
             </div>
 

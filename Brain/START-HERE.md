@@ -1,6 +1,6 @@
 # START HERE — GetDocuFlight AI Visa Predictor
 ## Panduan Memulai di Antigravity + BMAD Method
-## Version 2.0 — Document Upload, Security Architecture, GDPR Compliance
+## Version 3.0 — 4 Products (AI Predictor $5, Flight $10, Bundle $20, Smart Navigator FREE)
 
 ---
 
@@ -50,6 +50,11 @@ getdocuflight/
 - [ ] **Story 4.2** — Consent screen (4 checkbox wajib sebelum upload)
 - [ ] **Story 4.3** — Document upload UI (rekening koran, surat kerja, slip gaji, visa stamps)
 - [ ] **Story 4.4** — Re-analysis result (updated score + saran spesifik dari dokumen)
+
+### Epic 5: Live Chat & Dummy Flight/Bundle
+- [ ] **Story 5.1** — Live Chat widget + Admin panel
+- [ ] **Story 5.2** — Order Form + Payment for Dummy Flight ($10) & Bundle Flight+Hotel ($20)
+- [x] **Story 5.5** — Smart Navigator (AI Visa Checker + Itinerary) Lead Magnet
 
 ---
 
@@ -190,10 +195,10 @@ Setelah migration berhasil, baru implement Story 4.1.
 
 | Dokumen | Isi |
 |---------|-----|
-| `bmad-01-project-brief.md` | Problem, target user, MVP scope, business model, compliance |
-| `bmad-02-prd.md` | Semua FR & NFR, user stories, acceptance criteria lengkap |
+| `bmad-01-project-brief.md` | Problem, target user, MVP scope, 4 products (AI $5, Flight $10, Bundle $20, Smart Navigator FREE), compliance |
+| `bmad-02-prd.md` | All FR & NFR, user stories, live chat, dummy ticket/hotel, acceptance criteria |
 | `bmad-03-architecture.md` | Folder structure, DB schema, API design, security layers, ADRs |
-| `bmad-04-epics-and-stories.md` | 4 epics, 11 stories, build order checklist |
+| `bmad-04-epics-and-stories.md` | 5 epics, 13 stories, build order checklist |
 
 ---
 

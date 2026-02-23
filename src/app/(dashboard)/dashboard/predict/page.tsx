@@ -9,6 +9,9 @@ export const metadata = {
         "Fill out the form and get your AI-powered visa approval prediction.",
 };
 
+import Link from "next/link";
+import Logo from "@/components/brand/Logo";
+
 export default async function PredictPage() {
     const session = await auth();
     if (!session?.user) {
@@ -25,19 +28,12 @@ export default async function PredictPage() {
 
             <div className="relative z-10 max-w-lg mx-auto px-4 py-8 sm:py-12">
                 {/* Logo */}
-                <div className="text-center mb-8">
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-heading font-heading inline-flex items-center gap-2">
-                        GetDocuFlight
-                        <PlaneTakeoff
-                            size={28}
-                            color="#9333EA"
-                            strokeWidth={1.5}
-                        />
-                    </h1>
+                <Link href="/" className="flex flex-col items-center text-center mb-8">
+                    <Logo className="justify-center scale-110 mb-1" />
                     <p className="text-sm text-muted mt-1">
-                        AI Visa Predictor — Know Your Chances
+                        Visa Predictor — Know Your Chances
                     </p>
-                </div>
+                </Link>
 
                 <PredictorForm />
             </div>

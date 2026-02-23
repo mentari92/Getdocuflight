@@ -31,11 +31,14 @@ enum OrderStatus {
 
 enum ProductType {
   AI_PREDICTION
+  DUMMY_FLIGHT
+  DUMMY_BUNDLE
 }
 
 enum PaymentGateway {
   DOMPETX
   STRIPE
+  POLAR
 }
 
 enum DocumentType {
@@ -51,6 +54,32 @@ enum DocumentStatus {
   DELETED
 }
 
+enum BookingStatus {
+  DRAFT
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  DELIVERED
+  COMPLETED
+  CANCELLED
+}
+
+enum TripType {
+  ONE_WAY
+  ROUND_TRIP
+}
+
+enum NotifChannel {
+  EMAIL
+  WHATSAPP
+  TELEGRAM
+}
+
+enum BookingSource {
+  WEB_FORM
+  CHATBOT
+}
+
 // ============================================
 // Auth.js Models (NextAuth v5 Prisma Adapter)
 // ============================================
@@ -62,6 +91,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  role          String    @default("USER") // USER | ADMIN
 
   accounts       Account[]
   sessions       Session[]
@@ -70,9 +100,13 @@ model User {
   documents      Document[]
   encryptionKeys EncryptionKey[]
   auditLogs      AuditLog[]
+  bookings       Booking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  freeToolsUsage   FreeToolsUsage[]
+  savedItineraries SavedItinerary[]
 }
 
 model Account {
@@ -136,6 +170,9 @@ model Prediction {
   recommendation        String     @db.Text
   recommendationSummary Json
   factors               Json
+  strategicActionPlan   Json?
+  benchmarks            Json?
+  auditedDocuments      Json?      // Stores the results of the Smart Document Auditor
   hasDocumentAnalysis   Boolean    @default(false)
   isPaid                Boolean    @default(false)
   orderId               String?
@@ -166,10 +203,71 @@ model Order {
 
   user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   predictions Prediction[]
+  bookings    Booking[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   paidAt    DateTime?
+}
+
+// ============================================
+// Booking Models (Sprint 3 — Integrated Booking Flow)
+// ============================================
+
+model Booking {
+  id              String        @id @default(cuid())
+  userId          String?
+  status          BookingStatus @default(DRAFT)
+
+  // Product Selection
+  productType     ProductType   @default(DUMMY_FLIGHT)
+
+  // Step 1: Flight Info
+  departureCity   String
+  arrivalCity     String
+  departureDate   DateTime
+  returnDate      DateTime?
+  tripType        TripType      @default(ONE_WAY)
+  passengerCount  Int           @default(1)
+
+  // Step 2: Hotel Info (conditional — only for FLIGHT_HOTEL_BUNDLE)
+  hotelCity       String?
+  hotelCheckIn    DateTime?
+  hotelCheckOut   DateTime?
+
+  // Contact
+  contactName     String?
+  contactEmail    String?
+  contactWhatsApp String?
+  contactTelegram String?
+  preferredNotif  NotifChannel  @default(EMAIL)
+
+  // Payment — dynamic pricing: $10 flight / $20 bundle
+  orderId         String?
+  amountUSD       Float?
+  amountIDR       Float?
+
+  // Source
+  source          BookingSource @default(WEB_FORM)
+
+  user       User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order      Order?             @relation(fields: [orderId], references: [id])
+  passengers BookingPassenger[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BookingPassenger {
+  id          String    @id @default(cuid())
+  bookingId   String
+  fullName    String
+  nationality String
+  passportNo  String?
+  salutation  String?   // Mr / Ms / Mrs
+  dateOfBirth DateTime?
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 }
 
 // ============================================
@@ -182,6 +280,7 @@ model Document {
   predictionId    String
   fileType        DocumentType
   storagePath     String
+  mimeType        String?
   encryptionKeyId String?
   status          DocumentStatus @default(PROCESSING)
   scheduledDeleteAt DateTime
@@ -217,4 +316,58 @@ model AuditLog {
   timestamp DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// Live Chat Models
+// ============================================
+
+model ChatConversation {
+  id          String   @id @default(cuid())
+  visitorId   String
+  visitorName String?
+  status      String   @default("OPEN")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  messages    ChatMessage[]
+}
+
+model ChatMessage {
+  id             String           @id @default(cuid())
+  conversationId String
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         String           // "visitor" or "admin"
+  content        String
+  createdAt      DateTime         @default(now())
+}
+
+// ============================================
+// Free Tool Models (Sprint 4 — Lead Gen & SEO)
+// ============================================
+
+model FreeToolsUsage {
+  id        String   @id @default(cuid())
+  userId    String?
+  toolType  String   // "VISA_CHECKER" | "ITINERARY"
+  email     String?  // Optional email for lead generation
+  ipAddress String
+  params    Json     // Store search parameters
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model SavedItinerary {
+  id          String   @id @default(cuid())
+  userId      String?
+  title       String
+  fromCountry String
+  toCountry   String
+  duration    Int      // in days
+  content     Json     // The generated itinerary data
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 }

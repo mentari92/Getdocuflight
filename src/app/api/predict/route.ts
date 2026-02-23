@@ -102,7 +102,7 @@ export async function POST(request: Request) {
         // Step 7: Save Prediction to PostgreSQL
         const prediction = await prisma.prediction.create({
             data: {
-                userId,
+                user: { connect: { id: userId } },
                 fromCountry: input.nationality,
                 toCountry: input.destination,
                 inputData: input as object,
@@ -142,10 +142,11 @@ export async function POST(request: Request) {
             teaser: aiResult.teaser,
             price,
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("[/api/predict] Error:", error);
+        require("fs").writeFileSync("/Users/mentarirahman/Documents/Getdocuflight/predict_error.log", error.stack || error.message || String(error));
         return NextResponse.json(
-            { error: "Something went wrong. Please try again." },
+            { error: "Something went wrong. Please try again.", details: error.message },
             { status: 500 }
         );
     }

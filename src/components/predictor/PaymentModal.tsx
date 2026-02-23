@@ -4,7 +4,7 @@
  * PaymentModal — Payment method selection + DompetX checkout.
  *
  * Opens as a modal overlay. User selects payment method,
- * clicks "Bayar Sekarang" → POST /api/payments/create → redirect to DompetX.
+ * clicks "Pay Now" → POST /api/payments/create → redirect to DompetX.
  */
 
 import { useState } from "react";
@@ -19,16 +19,14 @@ interface PaymentModalProps {
 }
 
 const PAYMENT_METHODS = [
-    { value: "qris", label: "QRIS", icon: "📱", desc: "Scan & bayar" },
-    { value: "virtual_account_bca", label: "VA BCA", icon: "🏦", desc: "Transfer bank" },
-    { value: "virtual_account_bni", label: "VA BNI", icon: "🏦", desc: "Transfer bank" },
-    { value: "virtual_account_bri", label: "VA BRI", icon: "🏦", desc: "Transfer bank" },
-    { value: "virtual_account_mandiri", label: "VA Mandiri", icon: "🏦", desc: "Transfer bank" },
-    { value: "gopay", label: "GoPay", icon: "💚", desc: "E-wallet" },
-    { value: "ovo", label: "OVO", icon: "💜", desc: "E-wallet" },
-    { value: "dana", label: "DANA", icon: "💙", desc: "E-wallet" },
-    { value: "shopeepay", label: "ShopeePay", icon: "🧡", desc: "E-wallet" },
+    { value: "qris", label: "QRIS", icon: "📱", desc: "Scan & pay", gateway: "DOMPETX" },
+    { value: "card", label: "Debit / Credit Card", icon: "💳", desc: "Apple Pay, Google Pay, & Cards", gateway: "POLAR" },
+    { value: "virtual_account_bca", label: "VA BCA", icon: "🏦", desc: "Bank transfer", gateway: "DOMPETX" },
+    { value: "virtual_account_bni", label: "VA BNI", icon: "🏦", desc: "Bank transfer", gateway: "DOMPETX" },
+    { value: "gopay", label: "GoPay", icon: "💚", desc: "E-wallet", gateway: "DOMPETX" },
+    { value: "ovo", label: "OVO", icon: "💜", desc: "E-wallet", gateway: "DOMPETX" },
 ];
+
 
 export default function PaymentModal({
     isOpen,
@@ -58,6 +56,7 @@ export default function PaymentModal({
                 body: JSON.stringify({
                     predictionId,
                     paymentMethod: selectedMethod,
+                    gateway: PAYMENT_METHODS.find(m => m.value === selectedMethod)?.gateway || "DOMPETX",
                 }),
             });
 
@@ -73,7 +72,7 @@ export default function PaymentModal({
             setError(
                 err instanceof Error
                     ? err.message
-                    : "Gagal membuat pembayaran. Coba lagi."
+                    : "Payment failed. Please try again."
             );
             setIsProcessing(false);
         }
@@ -94,12 +93,12 @@ export default function PaymentModal({
                 {/* Header */}
                 <div className="sticky top-0 bg-white border-b border-gold-border/50 px-5 py-4 rounded-t-2xl flex items-center justify-between z-10">
                     <h3 className="text-lg font-bold text-heading font-heading">
-                        Pembayaran
+                        Payment
                     </h3>
                     <button
                         onClick={onClose}
                         disabled={isProcessing}
-                        className="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-muted hover:text-heading transition-colors"
+                        className="w-8 h-8 rounded-full bg-surface flex items-center justify-center text-muted hover:text-heading transition-colors cursor-pointer"
                     >
                         ✕
                     </button>
@@ -108,22 +107,24 @@ export default function PaymentModal({
                 <div className="p-5 space-y-5">
                     {/* Price Summary */}
                     <div className="bg-primary/5 rounded-xl p-4 text-center">
-                        <p className="text-sm text-muted mb-1">Total pembayaran</p>
+                        <p className="text-sm text-muted mb-1">Total payment</p>
                         <div className="flex items-baseline justify-center gap-1.5">
                             <span className="text-2xl font-extrabold text-heading font-heading">
                                 Rp {formattedIDR}
                             </span>
                         </div>
                         <p className="text-xs text-muted mt-1">
-                            ${priceUSD.toFixed(2)} USD · kurs: 1 USD = Rp{" "}
-                            {formattedRate}
+                            {selectedMethod === "card"
+                                ? `$${priceUSD.toFixed(2)} USD`
+                                : `~ $${priceUSD.toFixed(2)} USD · rate: 1 USD = Rp ${formattedRate}`
+                            }
                         </p>
                     </div>
 
                     {/* Payment Methods */}
                     <div>
                         <p className="text-sm font-semibold text-heading mb-3">
-                            Pilih metode pembayaran
+                            Select payment method
                         </p>
                         <div className="space-y-2">
                             {PAYMENT_METHODS.map((method) => (
@@ -135,9 +136,9 @@ export default function PaymentModal({
                                     }
                                     disabled={isProcessing}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-200 text-left ${selectedMethod === method.value
-                                            ? "border-primary bg-primary/5"
-                                            : "border-gold-border hover:border-primary/30"
-                                        } ${isProcessing ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                                        ? "border-primary bg-primary/5"
+                                        : "border-gold-border hover:border-primary/30"
+                                        } uppercase ${method.gateway === "POLAR" ? "border-gold/50 bg-gold/5" : ""} ${isProcessing ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
                                 >
                                     <span className="text-xl">
                                         {method.icon}
@@ -206,16 +207,22 @@ export default function PaymentModal({
                                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                                     />
                                 </svg>
-                                Memproses...
+                                Processing...
                             </span>
+                        ) : selectedMethod === "card" ? (
+                            `Pay $${priceUSD.toFixed(2)}`
                         ) : (
-                            `Bayar Rp ${formattedIDR}`
+                            `Pay Rp ${formattedIDR}`
                         )}
                     </button>
 
                     {/* Security footer */}
                     <div className="flex items-center justify-center gap-2 pt-2">
-                        <span className="text-xs text-muted">🔒 Pembayaran aman via DompetX</span>
+                        <span className="text-xs text-muted">
+                            🔒 {PAYMENT_METHODS.find(m => m.value === selectedMethod)?.gateway === "POLAR"
+                                ? "Secure payment via Polar.sh"
+                                : "Secure payment via DompetX"}
+                        </span>
                     </div>
                 </div>
             </div>

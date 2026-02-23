@@ -1,19 +1,24 @@
 # Product Requirements Document (PRD)
 # GetDocuFlight – AI Visa Predictor
 
-**Version:** 2.0  
+**Version:** 3.0  
 **Status:** Final — Ready for Development  
-**Updated:** Free/paid tier logic, document upload (Opsi C), saran perbaikan format, compliance
+**Updated:** 3 products (AI Predictor $5, Dummy Flight $10, Bundle $20), order form, live chat, document upload, compliance
 
 ---
 
 ## 1. Overview
 
-GetDocuFlight's AI Visa Predictor allows travelers to submit their visa application profile and receive an AI-generated approval probability score.
+GetDocuFlight is a travel support platform with 4 core products:
 
-**Free tier:** Submit form → receive 1–2 paragraph teaser result (curiosity-driven, no score/breakdown).
+1. **AI Visa Predictor** — Submit form → free preview → unlock full analysis for **$5**
+2. **Dummy Flight Ticket** — Flight reservation with valid PNR for visa applications, **$10**, ordered via order form
+3. **Bundle: Dummy Flight + Hotel** — Flight + hotel booking for visa applications, **$20**, ordered via order form
+4. **Smart Navigator (FREE)** — Visa requirements checker + AI itinerary generator lead magnet.
 
-**Paid tier ($5.00 USD):** Unlock full result immediately from form data — approval score, factor breakdown, saran perbaikan (general summary + specific per-factor). Optionally upload documents within 24 hours for re-analysis with higher accuracy.
+**AI Visa Predictor free tier:** Submit form → receive 1–2 paragraph teaser result (curiosity-driven, no score/breakdown).
+
+**AI Visa Predictor paid tier ($5 USD):** Unlock full result — approval score, factor breakdown, saran perbaikan (general summary + specific per-factor). Optionally upload documents within 24 hours for re-analysis with higher accuracy.
 
 ---
 
@@ -48,11 +53,11 @@ The form collects the following fields:
 
 | Field | Type | Options |
 |-------|------|---------|
-| Passport nationality | Dropdown | All countries |
-| Destination country | Dropdown | All countries |
+| Passport nationality | Searchable Dropdown | All countries (Global list) |
+| Destination country | Searchable Dropdown | All countries (Global list) |
 | Passport type | Radio | Regular / E-Passport / Official / Diplomatic |
 | Travel purpose | Radio | Tourism / Business / Education |
-| Prior travel history | Multi-select | List of countries |
+| Prior travel history | Multi-select (Searchable) | List of countries |
 | Employment status | Radio | Employed / Self-employed / Student / Unemployed |
 | Monthly income (USD) | Number input | — |
 | Bank balance (USD) | Number input | — |
@@ -85,16 +90,15 @@ After form submission, user sees:
   - Good example: *"Profil kamu menunjukkan beberapa kekuatan, namun ada faktor penting yang perlu diperhatikan sebelum mengajukan visa Jepang. Kondisi keuangan kamu perlu dievaluasi lebih lanjut, dan ada satu elemen dalam riwayat perjalanan yang kemungkinan memengaruhi keputusan petugas imigrasi."*
   - Bad example (jangan begini): *"Saldo tabungan kamu terlalu rendah dan kamu tidak punya visa sebelumnya."* — terlalu spesifik, tidak ada incentive untuk bayar
 - Score, risk level, factors, dan recommendations: **hidden / blurred**
-- CTA: **"Lihat Hasil Lengkap + Saran Perbaikan → $5.00 (Rp ~83.000\*)"**
-- Note: *"\*Jumlah IDR berdasarkan kurs hari ini"*
+- CTA: **"Unlock Full Analysis → $5"**
 
-### FR-05: Payment ($5.00 USD Dynamic IDR)
-- Price canonical: **$5.00 USD**, displayed in both USD and IDR
-- IDR = `$5.00 × kurs_hari_ini` via freecurrencyapi.com, cached Redis TTL 1 jam
-- Display: *"Rp 83.902 (kurs: 1 USD = Rp 16.780)"*
-- Payment methods: QRIS / VA (BCA, BNI, BRI, Mandiri) / GoPay / OVO / DANA / ShopeePay
-- Order created: status PENDING, `amountUSD: 5.00`, `amountIDR`, `exchangeRate`
-- DompetX webhook validated via HMAC before DB write
+### FR-05: Payment ($5 USD)
+- Price: **$5 USD**
+- Payment methods:
+  - **Local (DompetX):** QRIS / VA (BCA, BNI, BRI, Mandiri) / GoPay / OVO / DANA / ShopeePay
+  - **International (Polar.sh):** Credit Card (Visa/Mastercard/Amex)
+- Order created: status PENDING, `amountUSD: 5.00`
+- Webhook validated via HMAC/Secret signature before DB write
 - On confirmed payment: Order → COMPLETED, Prediction.isPaid = true
 - Email sent via Resend: *"Hasil prediksi visa kamu sudah siap"*
 
@@ -187,6 +191,68 @@ Sama dengan FR-06, ditambah:
 - Unpaid orders expire after 24 hours
 - Expired orders: user must submit form again
 
+### FR-11: Live Chat
+- Floating chat widget on all public pages (bottom-right corner)
+- Visitor enters name → starts conversation
+- Messages stored in PostgreSQL (ChatConversation + ChatMessage tables)
+- Polling for real-time message updates
+- Admin can view and reply via `/admin/chat`
+- **Auto-greeting message includes link to order form:** *"Need a dummy ticket or hotel? Fill out our form → [Order Now](/order)"*
+- Used for: general inquiries, order support, post-order questions
+
+### FR-12: Dummy Flight Ticket & Hotel Reservation (Order Form)
+
+**Order form at `/order` (public, no login required):**
+
+**Step 1 — Product Selection:**
+| Option | Price | Deskripsi |
+|--------|-------|-----------|
+| ✈️ Dummy Flight Ticket | $10 | Tiket penerbangan dummy |
+| ✈️🏨 Bundle (Flight + Hotel) | $20 | Tiket penerbangan dummy + reservasi hotel |
+
+**Step 2 — Contact Detail:**
+- Full name (contact person)
+- Email address (for ticket delivery)
+- WhatsApp / Telegram number
+- Preferred notification method (Whatsapp/Telegram/Email)
+
+**Step 3 — Passenger Details (Dynamic List):**
+- Full name (as per passport)
+- Nationality
+- Salutation (Mr/Ms/Mrs/Mstr/Miss) — *Optional*
+- Date of Birth — *Optional*
+- Passport Number — *Optional*
+
+**Step 4 — Flight Details:**
+- Departure city & Arrival city
+- Departure date
+- Return date (optional)
+- Trip type (One-way / Round-trip)
+
+**Step 5 — Hotel Details (Tampil jika pilih Bundle):**
+- City
+- Check-in date & Check-out date
+
+**Payment & Redirect:**
+- Selesai isi form → Auto-create `booking` (status: PENDING_PAYMENT)
+- Redirect ke gateway pilihan (DompetX atau Polar.sh)
+- Sukses bayar → Redirect ke `/order/[id]` (Public Order Tracking)
+- Booking status otomatis menjadi `PAID`, Order status menjadi `PAID` via webhook.
+
+**Authentication Model (Epic 5 update):**
+- ❌ **NO LOGIN REQUIRED** untuk order dummy flight / bundle (Guest checkout)
+- ✅ Login required HANYA untuk AI Visa Predictor (karena ada data dokumen sensitif)
+
+### FR-13: Admin Orders Panel (Epic 5 update)
+Dashboard khusus admin di `/admin/orders` untuk mengelola pesanan tiket dummy.
+
+**Fitur Utama:**
+- Table list semua pesanan (`DRAFT`, `PENDING_PAYMENT`, `PAID`, `DELIVERED`, `COMPLETED`, `CANCELLED`)
+- Filter by status, search by name/email/city, dan pagination
+- Kolom "Product Type" (Flight / Bundle badge)
+- Detail page pesanan dengan informasi lengkap penumpang (termasuk tombol Copy to Clipboard format B2B)
+- **Status Management:** Admin memproses pesanan `PAID`, mengirim tiket PDF manual via channel komunikasi yang dipilih user, lalu klik tombol **"Mark as Delivered"** (status -> `DELIVERED`). Setelah tiket di-accept user, klik **"Mark as Completed"** (status -> `COMPLETED`).
+
 ---
 
 ## 4. Non-Functional Requirements
@@ -236,23 +302,23 @@ Sama dengan FR-06, ditambah:
 | US-01 | Visitor | Register an account | I can use the predictor |
 | US-02 | Logged-in user | Fill in my visa profile | I can get a prediction |
 | US-03 | Logged-in user | See 1–2 paragraph preview for free | I can decide if it's worth paying |
-| US-04 | Logged-in user | Pay $5.00 (in IDR) | I can see my full result immediately |
+| US-04 | Logged-in user | Pay $5 | I can see my full result immediately |
 | US-05 | Paying user | See general summary + specific recommendations | I know exactly what to improve |
 | US-06 | Paying user | Upload rekening koran within 24 hours | I can get a more accurate re-analysis |
 | US-07 | Paying user | See countdown before my documents are deleted | I feel safe about my sensitive data |
 | US-08 | Any user | Delete my documents immediately | I have full control over my data |
 | US-09 | Paying user | Receive email with my full result | I have a record of it |
 | US-10 | Returning user | View my past predictions | I can re-access results I've paid for |
+| US-11 | Visitor | Chat with customer service via Live Chat | I can ask questions and get help |
+| US-12 | Visitor | Fill out order form at /order for dummy flight ($10) | I get a flight reservation with valid PNR for my visa without logging in |
+| US-13 | Visitor | Order bundle flight + hotel for $20 | I get both documents in one order at a convenient price |
 
 ---
 
 ## 6. Out of Scope (MVP)
 
 - Free visa checker
-- Dummy ticket booking
-- Stripe payment integration
 - Multi-language (Indonesian UI only for MVP)
-- Admin panel
 - Social / OAuth login
 - Bulk predictions
 - API access for third parties
@@ -281,6 +347,19 @@ Sama dengan FR-06, ditambah:
 - [ ] Manual delete button works — file removed from MinIO + key removed from DB
 - [ ] Auto-delete fires 24 hours after re-analysis completes
 - [ ] Audit log records every file access event
+- After 24 hours: Redis job triggers deletion → files deleted from MinIO → keys deleted from DB → document status = DELETED → UI shows "Dokumen telah dihapus"
+
+### FR-11: Smart Navigator (Lead Magnet)
+- **Feature:** Dual-tool providing Visa Requirements + AI Itinerary.
+- **Access:** Publicly accessible at `/smart-navigator`.
+- **Inputs:** Nationality (Dropdown), Destination (Dropdown), Email (Optional).
+- **Processing:** GPT-4o generates structured requirements and a 7-day travel itinerary.
+- **Lead Gen:** User email and search params are saved to the `FreeToolsUsage` table.
+- **Performance:** Response must be returned in < 10 seconds.
+- **Conversion:** Prominent CTA to "Get Official Dummy Ticket" after result is shown.
+
+## 5. Non-Functional Requirements (NFR)
+- [ ] Audit log records every file access event
 
 **Compliance:**
 - [ ] KTP and passport biometric page cannot be uploaded (file type / flow restriction)
@@ -291,3 +370,19 @@ Sama dengan FR-06, ditambah:
 - [ ] Expired unpaid orders show "session expired" message
 - [ ] All API routes return appropriate error codes
 - [ ] Mobile-responsive on 375px
+
+**Live Chat:**
+- [ ] Chat widget visible on all public pages
+- [ ] Visitor can enter name and send messages
+- [ ] Messages stored in database and visible to admin
+- [ ] Admin can reply from `/admin/chat`
+- [ ] Polling updates messages in real-time
+
+**Dummy Ticket & Hotel:**
+- [ ] Order form at `/order` is accessible without login
+- [ ] Customer can select Flight ($10) / Bundle Flight+Hotel ($20)
+- [ ] Form collects all required details (passenger, flight, hotel)
+- [ ] Payment via DompetX triggers immediately after form submission
+- [ ] Order appears in admin dashboard after payment confirmed
+- [ ] CS can process and deliver within 1–2 hours
+- [ ] Valid PNR generated for flight tickets

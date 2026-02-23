@@ -199,10 +199,6 @@ export function LoginForm() {
                         </svg>
                         GDPR Compliant
                     </span>
-                    <span className="flex items-center gap-1">
-                        🇪🇺
-                        EU Server
-                    </span>
                 </div>
             </div>
         </div>

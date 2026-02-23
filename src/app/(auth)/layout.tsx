@@ -1,3 +1,6 @@
+import Link from "next/link";
+import Logo from "@/components/brand/Logo";
+
 export default function AuthLayout({
     children,
 }: {
@@ -13,14 +16,12 @@ export default function AuthLayout({
 
             <div className="relative z-10 w-full max-w-md">
                 {/* Logo */}
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-extrabold text-heading tracking-tight font-heading">
-                        ✈️ GetDocuFlight
-                    </h1>
-                    <p className="text-muted mt-2 text-sm">
-                        AI Visa Predictor — Know Your Chances
+                <Link href="/" className="flex flex-col items-center mb-8">
+                    <Logo className="justify-center" />
+                    <p className="text-muted mt-2 text-sm text-center">
+                        Visa Predictor — Know Your Chances
                     </p>
-                </div>
+                </Link>
                 {children}
             </div>
         </div>

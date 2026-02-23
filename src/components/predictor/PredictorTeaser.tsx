@@ -19,7 +19,7 @@ export default function PredictorTeaser({
     destination,
     createdAt,
 }: PredictorTeaserProps) {
-    const formattedDate = new Date(createdAt).toLocaleDateString("id-ID", {
+    const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -37,7 +37,7 @@ export default function PredictorTeaser({
                     <span className="capitalize">🌍 {destination.replace(/_/g, " ")}</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl font-extrabold text-heading font-heading">
-                    Hasil Prediksi Visa Kamu
+                    Your Visa Prediction Results
                 </h2>
             </div>
 
@@ -47,7 +47,7 @@ export default function PredictorTeaser({
                     <span className="text-2xl mt-0.5">💡</span>
                     <div>
                         <h3 className="text-sm font-bold text-primary mb-2 uppercase tracking-wide">
-                            Preview Analisis
+                            Analysis Preview
                         </h3>
                         <p className="text-body leading-relaxed whitespace-pre-line">
                             {teaser}
@@ -59,7 +59,7 @@ export default function PredictorTeaser({
             {/* Approval Score — LOCKED */}
             <div className="relative">
                 <div className="bg-surface border border-gold-border rounded-2xl p-6 text-center select-none">
-                    <p className="text-sm text-muted mb-2">Skor Persetujuan</p>
+                    <p className="text-sm text-muted mb-2">Approval Score</p>
                     <div className="relative inline-block">
                         <span className="text-6xl font-extrabold text-heading/10 font-heading blur-lg select-none">
                             72
@@ -70,7 +70,7 @@ export default function PredictorTeaser({
                             <div className="bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 shadow-sm border border-gold-border">
                                 <span className="text-lg">🔒</span>
                                 <span className="text-sm font-semibold text-muted ml-1.5">
-                                    Terkunci
+                                    Locked
                                 </span>
                             </div>
                         </div>
@@ -86,7 +86,7 @@ export default function PredictorTeaser({
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm border border-gold-border">
-                            <span className="text-xs font-semibold text-muted">🔒 Tingkat Risiko</span>
+                            <span className="text-xs font-semibold text-muted">🔒 Risk Level</span>
                         </div>
                     </div>
                 </div>
@@ -97,10 +97,10 @@ export default function PredictorTeaser({
                 <div className="bg-surface border border-gold-border rounded-2xl overflow-hidden select-none">
                     <div className="p-4 border-b border-gold-border/50 flex items-center justify-between">
                         <h3 className="text-sm font-bold text-heading">
-                            📊 Faktor Penilaian
+                            📊 Assessment Factors
                         </h3>
                         <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-                            🔒 Terkunci
+                            🔒 Locked
                         </span>
                     </div>
                     <div className="divide-y divide-gold-border/30">
@@ -125,10 +125,10 @@ export default function PredictorTeaser({
                 <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px] rounded-2xl flex items-center justify-center">
                     <div className="bg-white/90 rounded-xl px-5 py-3 shadow-md border border-gold-border text-center">
                         <p className="text-sm font-bold text-heading">
-                            3–5 faktor dianalisis
+                            3–5 factors analyzed
                         </p>
                         <p className="text-xs text-muted mt-0.5">
-                            Unlock untuk melihat detail
+                            Unlock to view details
                         </p>
                     </div>
                 </div>
@@ -138,7 +138,7 @@ export default function PredictorTeaser({
             <div className="relative">
                 <div className="bg-surface border border-gold-border rounded-2xl p-5 select-none">
                     <h3 className="text-sm font-bold text-heading mb-3">
-                        📝 Saran Perbaikan
+                        📝 Improvement Recommendations
                     </h3>
                     <div className="space-y-2 blur-[4px]">
                         <div className="flex items-start gap-2">
@@ -165,10 +165,10 @@ export default function PredictorTeaser({
                 <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px] rounded-2xl flex items-center justify-center">
                     <div className="bg-white/90 rounded-xl px-5 py-3 shadow-md border border-gold-border text-center">
                         <p className="text-sm font-bold text-heading">
-                            3–4 rekomendasi tersedia
+                            3–4 recommendations available
                         </p>
                         <p className="text-xs text-muted mt-0.5">
-                            Termasuk langkah perbaikan konkret
+                            Includes concrete improvement steps
                         </p>
                     </div>
                 </div>
