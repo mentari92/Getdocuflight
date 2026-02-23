@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { COMBINED_LOCATIONS, POPULAR_AIRPORTS, type AirportData } from "@/lib/data/airports";
+import { COMBINED_LOCATIONS, POPULAR_AIRPORTS, type AirportData } from "@/lib/data/locations";
 import { Check, ChevronDown, MapPin } from "lucide-react";
 
 interface SearchableCitySelectProps {
