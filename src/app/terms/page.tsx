@@ -3,7 +3,7 @@ import InfoLayout from "@/components/info/InfoLayout";
 export default function TermsPage() {
     return (
         <InfoLayout title="Terms and Conditions">
-            <p className="text-sm border-b border-gold-border pb-4 mb-8">Last Updated: February 27, 2026</p>
+            <p className="text-sm border-b border-gold-border pb-4 mb-8">Last Updated: February 28, 2026</p>
 
             <section>
                 <h2 className="text-xl font-bold text-heading mb-3">1. Services Provided</h2>
