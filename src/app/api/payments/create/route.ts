@@ -116,11 +116,15 @@ export async function POST(request: Request) {
         let payment;
 
         if (gateway === "POLAR") {
+            const productId = process.env.POLAR_PRODUCT_ID_VISA_PREDICTOR;
+            if (!productId) {
+                throw new Error("Polar Product ID for Visa Predictor not configured");
+            }
+
             payment = await createPolarCheckout({
                 orderId: order.id,
-                amountUSD: PRICE_USD,
+                productId,
                 customerEmail: session.user.email,
-                productName: `Visa Prediction — ${prediction.toCountry}`,
                 successUrl: `${appUrl}/dashboard/predictions/${predictionId}?payment=success`,
             });
         } else {
