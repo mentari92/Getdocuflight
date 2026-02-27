@@ -112,10 +112,10 @@ export default async function BlogPostPage({ params }: Props) {
                 {/* Footer CTA */}
                 <div className="bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-8 text-center text-white shadow-xl">
                     <h3 className="text-2xl font-bold font-heading text-white mb-3">
-                        Ready to apply for your Visa?
+                        📄 Itinerary Planning Documents
                     </h3>
                     <p className="text-white/90 mb-6 max-w-lg mx-auto">
-                        Don't risk a rejection. Predict your chances and get a verified verified flight reservation today.
+                        Don't risk a rejection. Predict your chances and get professional documentation assistance today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
