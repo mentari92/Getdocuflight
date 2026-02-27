@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { PlaneTakeoff } from "lucide-react";
 
 interface Message {
     id: string;
@@ -59,6 +60,19 @@ export default function LiveChat() {
             if (pollRef.current) clearInterval(pollRef.current);
         };
     }, [isOpen, conversationId, fetchMessages]);
+
+    // Handle global toggle event
+    useEffect(() => {
+        const handleToggle = (e: any) => {
+            if (e.detail && typeof e.detail.open === "boolean") {
+                setIsOpen(e.detail.open);
+            } else {
+                setIsOpen((prev) => !prev);
+            }
+        };
+        window.addEventListener("toggle-live-chat", handleToggle);
+        return () => window.removeEventListener("toggle-live-chat", handleToggle);
+    }, []);
 
     useEffect(() => {
         scrollToBottom();
@@ -147,12 +161,17 @@ export default function LiveChat() {
                             justifyContent: "space-between",
                         }}
                     >
-                        <div>
-                            <div style={{ fontWeight: 700, fontSize: "15px" }}>
-                                💬 GetDocuFlight Support
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '32px', height: '32px', background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <PlaneTakeoff size={18} color="#9333ea" strokeWidth={2.5} />
                             </div>
-                            <div style={{ fontSize: "12px", opacity: 0.7 }}>
-                                We typically reply within minutes
+                            <div>
+                                <div style={{ fontWeight: 700, fontSize: "15px" }}>
+                                    GetDocuFlight Support
+                                </div>
+                                <div style={{ fontSize: "12px", opacity: 0.7 }}>
+                                    We typically reply within minutes
+                                </div>
                             </div>
                         </div>
                         <button
@@ -274,7 +293,7 @@ export default function LiveChat() {
                                         >
                                             Order Form
                                         </a>{" "}
-                                        to get your dummy tickets immediately.
+                                        to get your professional itinerary plans immediately.
                                     </div>
                                 )}
 

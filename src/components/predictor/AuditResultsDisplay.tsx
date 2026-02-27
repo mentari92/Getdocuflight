@@ -112,7 +112,7 @@ export default function AuditResultsDisplay({ result }: AuditResultsDisplayProps
                                 </h4>
                                 <p className="text-sm text-heading opacity-90 mb-4 leading-relaxed">
                                     Our Visa Officer AI noticed you might be missing travel or accommodation documents.
-                                    You can instantly get verified travel reservations for your visa application.
+                                    We offer professional travel documentation assistance to support your visa application.
                                 </p>
                                 <div className="flex flex-wrap gap-3">
                                     {needsFlight && !needsHotel && (
@@ -120,8 +120,8 @@ export default function AuditResultsDisplay({ result }: AuditResultsDisplayProps
                                             href="/order"
                                             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary-dark transition-colors shadow-primary/20 shadow-md"
                                         >
-                                            <Plane className="w-4 h-4" />
-                                            Order Verified Flight ($10)
+                                            <FileText className="w-4 h-4" />
+                                            Itinerary Planning ($10)
                                         </Link>
                                     )}
                                     {needsHotel && (
@@ -129,8 +129,8 @@ export default function AuditResultsDisplay({ result }: AuditResultsDisplayProps
                                             href="/order"
                                             className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-indigo-600/20 shadow-md"
                                         >
-                                            <Building className="w-4 h-4" />
-                                            Order Flight + Hotel Bundle ($20)
+                                            <FileText className="w-4 h-4" />
+                                            Comprehensive Planning ($20)
                                         </Link>
                                     )}
                                 </div>

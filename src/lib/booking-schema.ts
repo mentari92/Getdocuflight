@@ -4,7 +4,7 @@
  * Step 0: Product selection (Flight $10 / Bundle $20)
  * Step 1: Passenger details (name, nationality, passport, DOB)
  * Step 2: Flight info (departure, arrival, dates)
- * Step 3: Hotel details (conditional — only for DUMMY_BUNDLE)
+ * Step 3: Hotel details (conditional — only for VERIFIED_BUNDLE)
  * Step 4: Contact & payment (name, email, WhatsApp, Telegram)
  */
 
@@ -16,8 +16,8 @@ export { COUNTRIES };
 // ── Pricing Constants ──────────────────────────────────
 
 export const PRICING = {
-    DUMMY_FLIGHT: 10.0, // USD
-    DUMMY_BUNDLE: 20.0, // USD (flight + hotel)
+    VERIFIED_FLIGHT: 10.0, // USD
+    VERIFIED_BUNDLE: 20.0, // USD (flight + hotel)
 } as const;
 
 export type ProductTypeKey = keyof typeof PRICING;
@@ -69,7 +69,7 @@ export const POPULAR_CITIES = [
 // ── Step 0: Product Selection ──────────────────────────
 
 export const productSchema = z.object({
-    productType: z.enum(["DUMMY_FLIGHT", "DUMMY_BUNDLE"]),
+    productType: z.enum(["VERIFIED_FLIGHT", "VERIFIED_BUNDLE"]),
 });
 
 // ── Step 1: Passenger Details ──────────────────────────
@@ -239,7 +239,7 @@ export const defaultPassenger: PassengerData = {
 };
 
 export const defaultProduct: ProductData = {
-    productType: "DUMMY_FLIGHT",
+    productType: "VERIFIED_FLIGHT",
 };
 
 export const defaultFlight = {

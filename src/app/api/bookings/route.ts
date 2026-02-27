@@ -3,7 +3,7 @@
  *
  * Create a new booking (DRAFT or PENDING_PAYMENT status).
  * Now supports the 5-step order form:
- *   - Product selection (DUMMY_FLIGHT / DUMMY_BUNDLE)
+ *   - Product selection (VERIFIED_FLIGHT / VERIFIED_BUNDLE)
  *   - Passenger details
  *   - Flight info
  *   - Hotel info (conditional)
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
                         : null,
                     tripType: data.tripType,
                     passengerCount: data.passengerCount,
-                    // Hotel fields (only for DUMMY_BUNDLE)
+                    // Hotel fields (only for VERIFIED_BUNDLE)
                     hotelCity: data.hotelCity || null,
                     hotelCheckIn: data.hotelCheckIn
                         ? new Date(data.hotelCheckIn)

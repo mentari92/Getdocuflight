@@ -3,19 +3,19 @@ import InfoLayout from "@/components/info/InfoLayout";
 export default function RefundPolicyPage() {
     return (
         <InfoLayout title="Refund and Cancellation Policy">
-            <p className="text-sm border-b border-gold-border pb-4 mb-8">Last Updated: February 21, 2026</p>
+            <p className="text-sm border-b border-gold-border pb-4 mb-8">Last Updated: February 27, 2026</p>
 
             <section>
                 <h2 className="text-xl font-bold text-heading mb-3">1. Refund Eligibility</h2>
                 <p>
-                    Due to the digital and instant nature of our services, refunds are generally not provided once a prediction is generated or a dummy ticket is issued.
+                    Due to the instant and personalized nature of our digital advisory and documentation services, refunds are generally not provided once the AI analysis has been generated or the itinerary planning documents have been delivered to the user.
                 </p>
             </section>
 
             <section className="mt-8">
                 <h2 className="text-xl font-bold text-heading mb-3">2. Order Cancellations</h2>
                 <p>
-                    Orders for dummy tickets can be cancelled within 1 hour of purchase, provided that the ticket has not yet been processed or issued by our team.
+                    Orders for itinerary planning assistance can be cancelled within 1 hour of purchase, provided that our analysts have not yet begun the manual verification or document preparation process. Once the document is in "Processing" status, it is ineligible for cancellation.
                 </p>
             </section>
 

@@ -4,14 +4,14 @@ export default function AboutPage() {
     return (
         <InfoLayout title="About Us">
             <p>
-                Welcome to <strong>GetDocuFlight</strong>, your trusted partner in simplifying the visa application process.
-                We combine advanced technology with deep industry knowledge to help travelers navigate the complexities of international travel documentation.
+                Welcome to <strong>GetDocuFlight</strong>, your professional partner in streamlining the visa application process through advanced digital analysis.
+                We combine artificial intelligence with deep industry data to help travelers organize their international travel documentation efficiently.
             </p>
 
             <h2 className="text-2xl font-bold text-heading mt-8 mb-4">Our Mission</h2>
             <p>
-                Our mission is to reduce the stress and uncertainty of visa applications.
-                By providing AI powered predictions and verified travel reservations, we empower travelers to apply with confidence and clarity.
+                Our mission is to reduce the uncertainty of visa applications through data-driven insights.
+                By providing AI-powered predictive analysis and professional itinerary planning assistance, we empower travelers to prepare their documentation with precision.
             </p>
 
             <h2 className="text-2xl font-bold text-heading mt-8 mb-4">Our Technology</h2>
@@ -22,9 +22,9 @@ export default function AboutPage() {
 
             <h2 className="text-2xl font-bold text-heading mt-8 mb-4">Why Choose Us?</h2>
             <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Confidence:</strong> Know your chances before you spend time and money on official applications.</li>
-                <li><strong>Speed:</strong> Get your verified reservations and AI analysis typically within 24 hours.</li>
-                <li><strong>Security:</strong> We use industry standard encryption and data deletion policies to keep your information safe.</li>
+                <li><strong>Accuracy:</strong> Understand your approval probability before committing significantly to official processes.</li>
+                <li><strong>Efficiency:</strong> Receive your digital itinerary plans and AI analysis typically within 1–2 working hours.</li>
+                <li><strong>Security:</strong> We employ enterprise-grade encryption and strict data management to ensure your private information remains yours.</li>
             </ul>
         </InfoLayout>
     );

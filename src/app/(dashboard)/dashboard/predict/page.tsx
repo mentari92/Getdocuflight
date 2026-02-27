@@ -4,9 +4,9 @@ import { PlaneTakeoff } from "lucide-react";
 import PredictorForm from "@/components/predictor/PredictorForm";
 
 export const metadata = {
-    title: "Visa Prediction — GetDocuFlight",
+    title: "Visa Predictive Analysis — GetDocuFlight",
     description:
-        "Fill out the form and get your AI-powered visa approval prediction.",
+        "Comprehensive AI-powered analysis of your visa approval probability and risk assessment.",
 };
 
 import Link from "next/link";

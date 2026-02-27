@@ -3,13 +3,13 @@ import InfoLayout from "@/components/info/InfoLayout";
 export default function TermsPage() {
     return (
         <InfoLayout title="Terms and Conditions">
-            <p className="text-sm border-b border-gold-border pb-4 mb-8">Last Updated: February 21, 2026</p>
+            <p className="text-sm border-b border-gold-border pb-4 mb-8">Last Updated: February 27, 2026</p>
 
             <section>
                 <h2 className="text-xl font-bold text-heading mb-3">1. Services Provided</h2>
                 <p>
-                    GetDocuFlight provides AI powered visa prediction assessments and verified reservation services (flight and hotel) for informational and visa application support purposes.
-                    Our predictions are based on statistical analysis and AI modeling and do not guarantee visa approval.
+                    GetDocuFlight provides AI-powered visa predictive assessments and professional itinerary planning assistance (flight and hotel documents) for informational and visa application support purposes.
+                    Our services constitute digital document preparation and advisory only; they do not constitute legal or immigration advice.
                 </p>
             </section>
 
@@ -17,7 +17,7 @@ export default function TermsPage() {
                 <h2 className="text-xl font-bold text-heading mb-3">2. User Responsibilities</h2>
                 <p>
                     Users are responsible for providing accurate and truthful information when using our services.
-                    The verified reservations provided are for visa application support and are not valid for actual travel.
+                    The planned itineraries provided are strictly for visa documentation support and are not valid for actual travel or boarding.
                 </p>
             </section>
 

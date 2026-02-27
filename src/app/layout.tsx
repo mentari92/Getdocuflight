@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import GlobalLiveChat from "@/components/livechat/GlobalLiveChat";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -18,9 +19,9 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "GetDocuFlight — Visa Predictor",
+  title: "GetDocuFlight — Visa Predictive Analysis & Travel Documentation",
   description:
-    "Predict your visa approval chances with AI. Get personalized recommendations to strengthen your application.",
+    "AI-powered visa approval prediction and professional travel itinerary planning assistance. Streamline your visa documentation with data-driven insights.",
 };
 
 export default function RootLayout({
@@ -30,7 +31,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${bricolage.variable} ${jakarta.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <GlobalLiveChat />
+      </body>
     </html>
   );
 }

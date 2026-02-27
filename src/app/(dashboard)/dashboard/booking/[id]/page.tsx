@@ -12,8 +12,8 @@ export async function generateMetadata({
 }) {
     const { id } = await params;
     return {
-        title: `Booking ${id.slice(0, 8)}… — GetDocuFlight`,
-        description: "Status booking dummy ticket kamu.",
+        title: `Itinerary Plan ${id.slice(0, 8)}… — GetDocuFlight`,
+        description: "Status bantuan dokumentasi perjalanan kamu.",
     };
 }
 
@@ -173,13 +173,13 @@ export default async function BookingDetailPage({
                     <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
                         <span className="text-2xl block mb-2">🎉</span>
                         <p className="text-sm font-semibold text-green-800">
-                            Dummy ticket sudah dikirim ke {booking.contactEmail}!
+                            Dokumen perencanaan perjalanan sudah dikirim ke {booking.contactEmail}!
                         </p>
                     </div>
                 )}
 
                 <p className="text-xs text-subtle text-center">
-                    Dummy ticket berlaku untuk keperluan pengajuan visa.
+                    Bantuan dokumentasi perjalanan ini berlaku untuk keperluan pengajuan visa.
                     Bukan tiket penerbangan asli.
                 </p>
             </main>

@@ -1,12 +1,12 @@
 "use client";
 
 /**
- * OrderForm — 5-step order form for dummy flight ticket / bundle.
+ * OrderForm — 5-step order form for verified flight reservation / bundle.
  *
- * Step 0: Product Selection (DUMMY_FLIGHT $10 / DUMMY_BUNDLE $20)
+ * Step 0: Product Selection (VERIFIED_FLIGHT $10 / VERIFIED_BUNDLE $20)
  * Step 1: Passenger Details (count + per-passenger fields)
  * Step 2: Flight Info (departure, arrival, dates, trip type)
- * Step 3: Hotel Details (conditional — only for DUMMY_BUNDLE)
+ * Step 3: Hotel Details (conditional — only for VERIFIED_BUNDLE)
  * Step 4: Contact & Submit
  */
 
@@ -44,7 +44,7 @@ export default function OrderForm() {
     const [error, setError] = useState<string | null>(null);
 
     // Step 0
-    const [productType, setProductType] = useState<ProductTypeKey>("DUMMY_FLIGHT");
+    const [productType, setProductType] = useState<ProductTypeKey>("VERIFIED_FLIGHT");
 
     // Step 1
     const [passengerCount, setPassengerCountState] = useState(1);
@@ -67,7 +67,7 @@ export default function OrderForm() {
     // Step 4 (contact)
     const [contact, setContact] = useState(defaultContact);
 
-    const isBundle = productType === "DUMMY_BUNDLE";
+    const isBundle = productType === "VERIFIED_BUNDLE";
     const price = PRICING[productType];
     const totalSteps = isBundle ? 5 : 4; // skip hotel step for flight-only
     const today = new Date().toISOString().split("T")[0];
@@ -274,36 +274,36 @@ export default function OrderForm() {
             {currentLogical === 0 && (
                 <div className="space-y-4 animate-in slide-in-from-right duration-300">
                     <h2 className="text-lg font-bold text-heading font-heading">
-                        Select Service
+                        Select Planning Service
                     </h2>
                     <p className="text-sm text-muted">
-                        Dummy ticket valid for visa applications. Processed within 1–2 working hours.
+                        Digital travel itinerary assistance for visa documentation. Verified itineraries are typically processed within 1–2 working hours.
                     </p>
 
                     <div className="grid gap-3">
                         {/* Flight Only */}
                         <button
                             type="button"
-                            onClick={() => setProductType("DUMMY_FLIGHT")}
-                            className={`relative text-left p-5 rounded-2xl border-2 transition-all cursor-pointer ${productType === "DUMMY_FLIGHT"
+                            onClick={() => setProductType("VERIFIED_FLIGHT")}
+                            className={`relative text-left p-5 rounded-2xl border-2 transition-all cursor-pointer ${productType === "VERIFIED_FLIGHT"
                                 ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
                                 : "border-gold-border hover:border-primary/30 bg-white"
                                 }`}
                         >
-                            {productType === "DUMMY_FLIGHT" && (
+                            {productType === "VERIFIED_FLIGHT" && (
                                 <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                                     <span className="text-white text-xs">✓</span>
                                 </div>
                             )}
-                            <span className="text-2xl mb-2 block">✈️</span>
+                            <span className="text-2xl mb-2 block">📋</span>
                             <h3 className="text-base font-bold text-heading">
-                                Dummy Flight Ticket
+                                Verified Itinerary Planning
                             </h3>
                             <p className="text-xs text-muted mt-1">
-                                Dummy flight ticket with valid PNR
+                                Legitimate flight itinerary arrangement for visa documentation
                             </p>
                             <p className="text-xl font-extrabold text-primary mt-3">
-                                ${PRICING.DUMMY_FLIGHT}
+                                ${PRICING.VERIFIED_FLIGHT}
                                 <span className="text-xs font-normal text-muted ml-1">
                                     USD
                                 </span>
@@ -313,29 +313,26 @@ export default function OrderForm() {
                         {/* Bundle */}
                         <button
                             type="button"
-                            onClick={() => setProductType("DUMMY_BUNDLE")}
-                            className={`relative text-left p-5 rounded-2xl border-2 transition-all cursor-pointer ${productType === "DUMMY_BUNDLE"
+                            onClick={() => setProductType("VERIFIED_BUNDLE")}
+                            className={`relative text-left p-5 rounded-2xl border-2 transition-all cursor-pointer ${productType === "VERIFIED_BUNDLE"
                                 ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
                                 : "border-gold-border hover:border-primary/30 bg-white"
                                 }`}
                         >
-                            {productType === "DUMMY_BUNDLE" && (
+                            {productType === "VERIFIED_BUNDLE" && (
                                 <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                                     <span className="text-white text-xs">✓</span>
                                 </div>
                             )}
-                            <div className="absolute top-3 right-12 px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded-full uppercase">
-                                Save 50%
-                            </div>
-                            <span className="text-2xl mb-2 block">✈️🏨</span>
+                            <span className="text-2xl mb-2 block">📋🏨</span>
                             <h3 className="text-base font-bold text-heading">
-                                Bundle: Flight + Hotel
+                                Comprehensive Travel Plan
                             </h3>
                             <p className="text-xs text-muted mt-1">
-                                Dummy flight ticket + hotel reservation
+                                Detailed flight and hotel itinerary planning assistance
                             </p>
                             <p className="text-xl font-extrabold text-primary mt-3">
-                                ${PRICING.DUMMY_BUNDLE}
+                                ${PRICING.VERIFIED_BUNDLE}
                                 <span className="text-xs font-normal text-muted ml-1">
                                     USD
                                 </span>
@@ -517,7 +514,7 @@ export default function OrderForm() {
                         Hotel Details
                     </h2>
                     <p className="text-sm text-muted">
-                        Dummy hotel reservation for your visa application.
+                        Verified hotel reservation for your visa application.
                     </p>
 
                     <div>
@@ -568,9 +565,9 @@ export default function OrderForm() {
                         </p>
                         <div className="text-sm text-heading space-y-1">
                             <p className="font-semibold">
-                                {productType === "DUMMY_BUNDLE"
-                                    ? "✈️🏨 Bundle: Flight + Hotel"
-                                    : "✈️ Dummy Flight Ticket"}
+                                {productType === "VERIFIED_BUNDLE"
+                                    ? "📋🏨 Comprehensive Travel Plan"
+                                    : "📋 Verified Itinerary Planning"}
                             </p>
                             <p>
                                 {departureCity} → {arrivalCity}
@@ -706,7 +703,7 @@ export default function OrderForm() {
             {/* Price note on last step */}
             {isLastStep && (
                 <p className="text-xs text-subtle text-center mt-3">
-                    Secure payment via DompetX. Dummy ticket delivered within 1–2 working hours.
+                    Secure payment. Itinerary planning documents delivered within 1–2 working hours.
                 </p>
             )}
         </div>

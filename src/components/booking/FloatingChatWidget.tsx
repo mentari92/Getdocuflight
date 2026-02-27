@@ -9,6 +9,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { PlaneTakeoff } from "lucide-react";
 
 interface Message {
     role: "user" | "assistant";
@@ -32,7 +33,7 @@ export default function FloatingChatWidget() {
         {
             role: "assistant",
             content:
-                "Halo! 👋 Selamat datang di GetDocuFlight.\n\nSaya bisa bantu kamu pesan dummy ticket untuk keperluan visa.\n\n1️⃣ **Isi di sini** — ceritakan rencana penerbangan kamu\n2️⃣ **Form Lengkap** — buka form booking langsung",
+                "Halo! 👋 Selamat datang di GetDocuFlight.\n\nSaya bisa bantu kamu untuk bantuan dokumentasi perjalanan (itinerary) untuk keperluan visa.\n\n1️⃣ **Isi di sini** — ceritakan rencana perjalanan kamu\n2️⃣ **Form Lengkap** — buka form bantuan dokumentasi",
         },
     ]);
     const [input, setInput] = useState("");
@@ -175,8 +176,8 @@ export default function FloatingChatWidget() {
                     {/* Header */}
                     <div className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] px-4 py-3 flex items-center justify-between flex-shrink-0">
                         <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 bg-white/15 backdrop-blur rounded-full flex items-center justify-center text-sm">
-                                ✈️
+                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                                <PlaneTakeoff className="w-5 h-5 text-primary" strokeWidth={2.5} />
                             </div>
                             <div>
                                 <p className="text-white text-sm font-bold leading-tight">
@@ -206,8 +207,8 @@ export default function FloatingChatWidget() {
                             >
                                 <div
                                     className={`max-w-[82%] px-3.5 py-2.5 rounded-2xl text-[13px] leading-relaxed whitespace-pre-wrap ${msg.role === "user"
-                                            ? "bg-[#1a1a2e] text-white rounded-br-sm"
-                                            : "bg-white text-gray-700 shadow-sm border border-gray-100 rounded-bl-sm"
+                                        ? "bg-[#1a1a2e] text-white rounded-br-sm"
+                                        : "bg-white text-gray-700 shadow-sm border border-gray-100 rounded-bl-sm"
                                         }`}
                                 >
                                     {msg.content}
@@ -233,7 +234,7 @@ export default function FloatingChatWidget() {
                                     onClick={handleCreateBooking}
                                     className="px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold text-sm rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                                 >
-                                    ✈️ Buat Booking
+                                    📋 Konfirmasi Detail
                                 </button>
                             </div>
                         )}
@@ -253,7 +254,7 @@ export default function FloatingChatWidget() {
                     <div className="px-3 py-2 border-t border-gray-100 bg-white flex gap-2 flex-shrink-0">
                         <button
                             onClick={() => {
-                                setInput("Saya mau pesan dummy ticket");
+                                setInput("Saya mau pesan bantuan dokumentasi perjalanan");
                                 setTimeout(sendMessage, 100);
                             }}
                             className="flex-1 py-2 text-[11px] font-semibold text-[#1a1a2e] bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-all cursor-pointer"

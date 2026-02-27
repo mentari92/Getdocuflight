@@ -155,7 +155,7 @@ export default function ItineraryDisplay({ visaResult, destination, email, durat
                                 🖨️ Print Plan
                             </button>
                             <Link href="/order" className="px-6 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/20">
-                                Buy Dummy Ticket
+                                Get Verified Reservation
                             </Link>
                         </div>
                     </div>

@@ -31,7 +31,7 @@ function getOpenAIClient(): OpenAI | null {
     return _openaiClient;
 }
 
-const SYSTEM_PROMPT = `You are the GetDocuFlight booking assistant. You help users book verified flight reservations for visa purposes.
+const SYSTEM_PROMPT = `You are the GetDocuFlight booking assistant. You help users with travel documentation assistance and itinerary planning for visa purposes.
 
 RULES:
 1. Speak in friendly, professional English.
@@ -45,11 +45,11 @@ RULES:
 3. If the user mentions relative dates like "tomorrow", "next week", "next month" — calculate from today's date.
 4. ALWAYS offer two options at first:
    - "Continue here" (chat-based)
-   - "Full Booking Form" (provide link /dashboard/booking)
+   - "Full Booking Form" (provide link /order)
 5. Summarize and ask for confirmation before submitting the booking.
 6. Do not invent data — ask the user if info is missing.
 
-IMPORTANT: If the user chooses "Full Booking Form", provide the link: /dashboard/booking
+IMPORTANT: If the user chooses "Full Booking Form", provide the link: /order
 
 Format response: plain text, not JSON (except when calling functions).`;
 
@@ -111,7 +111,7 @@ export async function processChatMessage(
     const client = getOpenAIClient();
     if (!client) {
         return {
-            message: "I'm sorry, the chatbot is currently unavailable. Please use the booking form at /dashboard/booking 📝",
+            message: "I'm sorry, the chatbot is currently unavailable. Please use the booking form at /order 📝",
         };
     }
 
@@ -140,7 +140,7 @@ export async function processChatMessage(
         if (choice.message.function_call?.name === "create_booking") {
             const args = JSON.parse(choice.message.function_call.arguments);
             return {
-                message: `✅ Booking is ready!\n\n📋 Summary:\n• Route: ${args.departureCity} → ${args.arrivalCity}\n• Date: ${args.departureDate}${args.returnDate ? ` — ${args.returnDate}` : ""}\n• Passengers: ${args.passengerCount}\n\nClick "Create Booking" below to proceed to payment.`,
+                message: `✅ Your plan is ready!\n\n📋 Summary:\n• Route: ${args.departureCity} → ${args.arrivalCity}\n• Date: ${args.departureDate}${args.returnDate ? ` — ${args.returnDate}` : ""}\n• Passengers: ${args.passengerCount}\n\nClick "Confirm Details" below to proceed to payment.`,
                 bookingData: args,
             };
         }
@@ -151,7 +151,7 @@ export async function processChatMessage(
     } catch (error) {
         console.error("[Chatbot] Error:", error);
         return {
-            message: "Sorry, an error occurred. Please try again or use the form at /dashboard/booking 📝",
+            message: "Sorry, an error occurred. Please try again or use the form at /order 📝",
         };
     }
 }

@@ -51,7 +51,7 @@ export default async function AdminOrderDetailPage({
         : null;
 
     const route = `${booking.departureCity} → ${booking.arrivalCity}`;
-    const isBundle = booking.productType === "DUMMY_BUNDLE";
+    const isBundle = booking.productType === "VERIFIED_BUNDLE";
 
     return (
         <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -74,7 +74,7 @@ export default async function AdminOrderDetailPage({
             {/* Product Type */}
             <div className="bg-surface/50 rounded-2xl p-5 text-center">
                 <p className="text-sm font-bold text-heading">
-                    {isBundle ? "✈️🏨 Bundle: Flight + Hotel" : "✈️ Dummy Flight Ticket"}
+                    {isBundle ? "📋🏨 Comprehensive Travel Plan" : "📋 Verified Itinerary Planning"}
                 </p>
                 {booking.amountUSD && (
                     <p className="text-lg font-extrabold text-primary mt-1">
@@ -232,7 +232,7 @@ export default async function AdminOrderDetailPage({
                     Passengers ({booking.passengerCount})
                 </h3>
                 <CopyPassengerData
-                    passengers={booking.passengers.map((p) => ({
+                    passengers={booking.passengers.map((p: any) => ({
                         id: p.id,
                         fullName: p.fullName,
                         nationality: p.nationality,

@@ -8,9 +8,9 @@
 import OrderForm from "@/components/booking/OrderForm";
 
 export const metadata = {
-    title: "Order Verified Reservation — GetDocuFlight",
+    title: "Itinerary Planning Assistance — GetDocuFlight",
     description:
-        "Order a verified flight reservation or flight+hotel bundle for your visa application. Processed within 1–2 working hours.",
+        "Order professional itinerary planning documents for your visa application. Digitally processed within 1–2 working hours.",
 };
 
 import Link from "next/link";
@@ -53,14 +53,14 @@ export default function OrderPage() {
                     <Link href="/" className="flex flex-col items-center text-center mb-8">
                         <Logo className="justify-center mb-1 scale-110" />
                         <p className="text-sm text-muted mt-1">
-                            Get your verified reservations in minutes
+                            Professional documentation assistance
                         </p>
                     </Link>
                     <h1 className="text-2xl font-extrabold text-heading font-heading">
-                        Order Verified Reservation
+                        Itinerary Planning Documents
                     </h1>
                     <p className="text-sm text-muted mt-2 max-w-sm mx-auto">
-                        Flight reservation valid for visa applications.
+                        Digital itinerary arrangements for visa documentation assistance.
                         Processed within 1–2 working hours after payment.
                     </p>
                 </div>

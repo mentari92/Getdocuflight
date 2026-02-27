@@ -31,7 +31,7 @@ export default function BookingChatbot() {
         {
             role: "assistant",
             content:
-                "Hi! 👋 I can help you order a dummy ticket.\n\nWant to fill in here (chat), or use the full form?\n\n1️⃣ Fill in here — tell me your flight plans\n2️⃣ Full Form — /order",
+                "Hi! 👋 I can help you with travel documentation assistance.\n\nWant to fill in here (chat), or use the full form?\n\n1️⃣ Fill in here — tell me your travel plans\n2️⃣ Full Form — /order",
         },
     ]);
     const [input, setInput] = useState("");
@@ -169,7 +169,7 @@ export default function BookingChatbot() {
                             onClick={handleCreateBooking}
                             className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                         >
-                            ✈️ Create Booking
+                            📋 Confirm Details
                         </button>
                     </div>
                 )}

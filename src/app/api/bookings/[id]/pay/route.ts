@@ -38,15 +38,15 @@ function resolvePrice(booking: { amountUSD: number | null; productType: string |
     return (
         booking.amountUSD ??
         PRICING[booking.productType as ProductTypeKey] ??
-        PRICING.DUMMY_FLIGHT
+        PRICING.VERIFIED_FLIGHT
     );
 }
 
 /** Build human-readable product label for payment description. */
 function getProductLabel(productType: string | null) {
-    return productType === "DUMMY_BUNDLE"
-        ? "Bundle: Flight + Hotel"
-        : "Dummy Flight Ticket";
+    return productType === "VERIFIED_BUNDLE"
+        ? "Comprehensive Travel Plan"
+        : "Verified Itinerary Planning Service";
 }
 
 // ── Route Handler ──────────────────────────────────────────
@@ -106,7 +106,7 @@ export async function POST(
         }
 
         // ── Step 2: Atomic transaction (no external I/O) ──
-        const { order, booking } = await prisma.$transaction(async (tx) => {
+        const { order, booking } = await prisma.$transaction(async (tx: any) => {
             // Re-read inside transaction for optimistic lock pattern
             const foundBooking = await tx.booking.findUnique({
                 where: { id },
@@ -129,7 +129,7 @@ export async function POST(
             const newOrder = await tx.order.create({
                 data: {
                     userId: userId || foundBooking.userId,
-                    productType: foundBooking.productType || "DUMMY_FLIGHT",
+                    productType: foundBooking.productType || "VERIFIED_FLIGHT",
                     amountUSD: priceUSD,
                     amountIDR,
                     exchangeRate,
@@ -168,11 +168,22 @@ export async function POST(
         let payment: any;
 
         if (gateway === "POLAR") {
+            // Select correct Polar Product ID based on productType
+            let polarProductId = process.env.POLAR_PRODUCT_ID_VERIFIED_FLIGHT;
+            if (booking.productType === "VERIFIED_BUNDLE") {
+                polarProductId = process.env.POLAR_PRODUCT_ID_VERIFIED_BUNDLE;
+            } else if (booking.productType === "VISA_PREDICTOR") {
+                polarProductId = process.env.POLAR_PRODUCT_ID_VISA_PREDICTOR;
+            }
+
+            if (!polarProductId) {
+                throw new Error("Polar Product ID not configured for this type");
+            }
+
             payment = await createPolarCheckout({
                 orderId: order.id,
-                amountUSD: priceUSD,
+                productId: polarProductId,
                 customerEmail,
-                productName: `GetDocuFlight Ticket — ${booking.departureCity} → ${booking.arrivalCity}`,
                 successUrl: `${appUrl}/order/${booking.id}?payment=success`,
             });
         } else {

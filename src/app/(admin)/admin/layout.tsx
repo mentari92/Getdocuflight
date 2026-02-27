@@ -29,6 +29,7 @@ export default async function AdminLayout({
         { href: "/admin", label: "📊 Dashboard", exact: true },
         { href: "/admin/orders", label: "📦 Orders" },
         { href: "/admin/chat", label: "💬 Chat" },
+        { href: "/admin/messages", label: "📧 Messages" },
     ];
 
     return (

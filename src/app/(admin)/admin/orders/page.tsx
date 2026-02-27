@@ -175,11 +175,11 @@ export default async function AdminOrdersPage({
                                         {b.arrivalCity.split(" (")[0]}
                                     </td>
                                     <td className="px-4 py-3">
-                                        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${b.productType === "DUMMY_BUNDLE"
+                                        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${b.productType === "VERIFIED_BUNDLE"
                                             ? "bg-purple-50 text-purple-700"
                                             : "bg-sky-50 text-sky-700"
                                             }`}>
-                                            {b.productType === "DUMMY_BUNDLE" ? "Bundle" : "Flight"}
+                                            {b.productType === "VERIFIED_BUNDLE" ? "Bundle" : "Flight"}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3">

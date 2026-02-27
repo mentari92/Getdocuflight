@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
+import Logo from "@/components/brand/Logo";
 
 export const metadata = {
     title: "Blog — GetDocuFlight",
@@ -11,6 +12,23 @@ export default function BlogIndexPage() {
 
     return (
         <div className="min-h-[80vh] bg-surface pb-24">
+            {/* ═══ Navbar ═══ */}
+            <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-primary/10">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6">
+                    <div className="flex items-center justify-between h-16">
+                        <Link href="/" className="flex items-center gap-2">
+                            <Logo />
+                        </Link>
+                        <Link
+                            href="/"
+                            className="text-sm font-medium text-muted hover:text-heading transition-colors"
+                        >
+                            Back to Home
+                        </Link>
+                    </div>
+                </div>
+            </nav>
+
             <div className="bg-primary pt-24 pb-16 px-4 mb-12">
                 <div className="max-w-4xl mx-auto text-center">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-white font-heading tracking-tight mb-4">

@@ -281,7 +281,7 @@ export async function checkVisaRequirements(
                 { role: "system", content: VISA_CHECKER_PROMPT },
                 {
                     role: "user",
-                    content: `What are the visa requirements for a citizen of ${nationality} traveling to ${destination} for tourism${duration ? ` for a duration of ${duration}` : ''}?`,
+                    content: `Analyze the visa requirements for a citizen of ${nationality} traveling to ${destination} for tourism${duration ? ` for a duration of ${duration}` : ''}. Be extremely precise.`,
                 },
             ],
             response_format: { type: "json_object" },
@@ -342,9 +342,10 @@ IMPORTANT RULES:
   "tips": ["Tip 1", "Tip 2"]
 }
 3. MUST GROUP BY WEEKS OR PHASES IF DURATION > 10 DAYS: (e.g., "day": "Week 1", "title": "Exploring the Capital"). NEVER output more than 10 items in the itinerary array.
-4. MAKE ACTIVITIES HIGH-QUALITY AND SPECIFIC: Don't just say "Visit a museum". Say "Explore the Tokyo National Museum in Ueno Park, admiring the largest collection of Japanese art, followed by a matcha tea break at a traditional teahouse."
+4. MAKE ACTIVITIES HIGH-QUALITY AND SPECIFIC: Don't just say "Visit a museum". Say "Explore the specific [Name of Landmark] in [Name of District], admiring the [Specific Detail], followed by a authentic local meal at a [Type of Place] recommended for [Specific Reason]."
 5. Include practical details in the activities (e.g. estimated time, transport tips, or specific dish recommendations).
-6. Focus on a curated mix of iconic landmarks, hidden gems, and authentic local experiences.`;
+6. Focus on a curated mix of iconic landmarks, hidden gems, and authentic local experiences.
+7. Tone should be premium, inspiring, and professional.`;
 
 export async function generateItinerary(
     destination: string,
@@ -360,7 +361,7 @@ export async function generateItinerary(
                 { role: "system", content: ITINERARY_PROMPT },
                 {
                     role: "user",
-                    content: `Create an engaging tourism itinerary for ${destination} for a duration of ${durationText}.`,
+                    content: `Create an engaging tourism itinerary for ${destination} for a duration of ${durationText}. Include specific local names and vivid descriptions.`,
                 },
             ],
             response_format: { type: "json_object" },
@@ -409,15 +410,20 @@ export async function generateChatReply(
     try {
         const SYSTEM_PROMPT = `You are the friendly, helpful AI support assistant for GetDocuFlight.
 GetDocuFlight provides two main services:
-1. Verified Dummy Flight Tickets (for visa applications) starting at $10 for flight only, and $20 for a flight+hotel bundle. Processed within 1-2 hours.
-2. AI Visa Approvals Predictor & Smart Navigator (free requirements check, $5 premium analysis).
+1. Verified Itinerary Planning services (for visa documentation) starting at $10 for planning only, and $20 for a comprehensive flight+hotel itinerary plan. Processed within 1-2 hours.
+2. AI Visa Approval Predictive Analysis & Smart Travel Navigator (free requirements check, $5 premium analysis).
 
 RULES:
 - Be polite, concise, and helpful.
 - Keep answers relatively short (1-3 paragraphs) as this is a live chat.
 - Always use the Indonesian word "kak" to address the user gently if responding in Indonesian, or keep it friendly in English.
 - If you don't know the answer or the user asks for a human, tell them an admin will be with them shortly.
-- Format with simple text (no complex markdown or asterisks for bolding). Keep it plain text.`;
+- Format with simple text (no complex markdown or asterisks for bolding). Keep it plain text.
+
+CRITICAL GUARDRAIL:
+- If the user asks for specific visa approval chances, specific visa requirements, document analysis, or strategic advice to get their visa approved, YOU MUST NOT ANSWER DIRECTLY.
+- Instead, politely decline and instruct the user to use the "Smart Navigator" and "Visa Predictor" features on our platform. Explain that deep, accurate analysis requires our dedicated AI tools. Recommend the premium analysis for the best results.
+- Your primary goal is to guide users to purchase Verified Itinerary Planning services or use the premium Visa Predictive Analysis.`;
 
         const response = await getOpenAIClient().chat.completions.create({
             model: "deepseek/deepseek-chat",

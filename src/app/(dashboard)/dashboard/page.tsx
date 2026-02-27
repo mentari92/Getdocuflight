@@ -123,16 +123,15 @@ export default async function DashboardPage() {
                         href="/dashboard/booking"
                         className="group bg-surface border border-gold-border rounded-2xl p-6 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
                     >
-                        <div className="text-3xl mb-3">✈️</div>
+                        <div className="text-3xl mb-3">📄</div>
                         <h3 className="text-lg font-bold text-heading font-heading mb-1">
-                            Dummy Flight Ticket
+                            Itinerary Planning
                         </h3>
                         <p className="text-muted text-sm">
-                            Get a verified flight reservation for your visa
-                            application.
+                            Get professional itinerary assistance for your visa documentation package.
                         </p>
                         <span className="text-primary text-sm font-medium mt-3 inline-flex items-center gap-1 group-hover:gap-2 transition-all">
-                            Order Ticket →
+                            Prepare Document →
                         </span>
                     </Link>
                 </div>

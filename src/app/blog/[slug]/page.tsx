@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPostBySlug } from "@/lib/blog";
+import Logo from "@/components/brand/Logo";
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -30,8 +31,25 @@ export default async function BlogPostPage({ params }: Props) {
 
     return (
         <div className="min-h-screen bg-surface pb-24">
+            {/* ═══ Navbar ═══ */}
+            <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-primary/10">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6">
+                    <div className="flex items-center justify-between h-16">
+                        <Link href="/" className="flex items-center gap-2">
+                            <Logo />
+                        </Link>
+                        <Link
+                            href="/"
+                            className="text-sm font-medium text-muted hover:text-heading transition-colors"
+                        >
+                            Back to Home
+                        </Link>
+                    </div>
+                </div>
+            </nav>
+
             {/* Header Hero */}
-            <div className="bg-primary pt-24 pb-12 px-4 relative overflow-hidden">
+            <div className="bg-primary pt-16 pb-12 px-4 relative overflow-hidden">
                 <div className="absolute inset-0 bg-white/5" />
                 <div className="max-w-4xl mx-auto relative z-10">
                     <Link
@@ -97,7 +115,7 @@ export default async function BlogPostPage({ params }: Props) {
                         Ready to apply for your Visa?
                     </h3>
                     <p className="text-white/90 mb-6 max-w-lg mx-auto">
-                        Don't risk a rejection. Predict your chances and get a verified dummy ticket today.
+                        Don't risk a rejection. Predict your chances and get a verified verified flight reservation today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
@@ -110,7 +128,7 @@ export default async function BlogPostPage({ params }: Props) {
                             href="/order"
                             className="px-6 py-3 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30 backdrop-blur-sm transition-colors"
                         >
-                            Order Dummy Ticket
+                            Get Documentation Assistance
                         </Link>
                     </div>
                 </div>

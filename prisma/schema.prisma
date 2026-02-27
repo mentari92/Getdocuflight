@@ -31,8 +31,8 @@ enum OrderStatus {
 
 enum ProductType {
   AI_PREDICTION
-  DUMMY_FLIGHT
-  DUMMY_BUNDLE
+  VERIFIED_FLIGHT
+  VERIFIED_BUNDLE
 }
 
 enum PaymentGateway {
@@ -220,7 +220,7 @@ model Booking {
   status          BookingStatus @default(DRAFT)
 
   // Product Selection
-  productType     ProductType   @default(DUMMY_FLIGHT)
+  productType     ProductType   @default(VERIFIED_FLIGHT)
 
   // Step 1: Flight Info
   departureCity   String
@@ -339,6 +339,16 @@ model ChatMessage {
   sender         String           // "visitor" or "admin"
   content        String
   createdAt      DateTime         @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  status    String   @default("UNREAD") // UNREAD | READ | ARCHIVED
+  createdAt DateTime @default(now())
 }
 
 // ============================================

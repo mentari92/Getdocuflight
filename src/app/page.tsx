@@ -1,11 +1,10 @@
 import Link from "next/link";
-import LiveChatWrapper from "@/components/livechat/LiveChatWrapper";
 import Logo from "@/components/brand/Logo";
 
 export const metadata = {
-  title: "GetDocuFlight — Visa Predictor",
+  title: "GetDocuFlight — Visa Predictive Analysis & Travel Documentation",
   description:
-    "Predict your visa approval chances with AI. Know your visa chances before you apply. Plus verified flight reservations for visa applications.",
+    "AI-powered visa approval prediction and professional travel itinerary planning assistance. Prepare your application documentation with data-driven insights.",
 };
 
 export default function Home() {
@@ -64,7 +63,7 @@ export default function Home() {
               href="/order"
               className="px-8 py-4 bg-surface text-heading font-bold text-base rounded-xl border-2 border-primary/20 hover:border-primary/40 transition-all hover:scale-[1.02] inline-block"
             >
-              ✈️ Order Verified Reservations
+              📄 Travel Documentation Assistance
             </Link>
             <Link
               href="/smart-navigator"
@@ -83,37 +82,36 @@ export default function Home() {
             Everything You Need for Your Visa Journey
           </h2>
           <p className="text-base text-muted text-center mb-12 max-w-lg mx-auto">
-            From AI powered predictions to verified flight reservations, we have you covered.
+            From AI-powered predictive analysis to professional itinerary planning, we have you covered.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: "🔮",
-                title: "Visa Predictor",
-                desc: "Get a free AI-powered preview of your visa chances. Pay $5 only when you want the full score, risk analysis, and professional recommendations.",
+                title: "Visa Approval Predictor",
+                desc: "AI-driven analysis of your travel profile. Get a probability score and professional recommendations to strengthen your application package.",
                 gradient: "from-primary/10 to-secondary/10",
                 border: "border-primary/20",
-                badge: "MUST-TRY",
+                badge: "AI-POWERED",
                 link: "/register"
               },
               {
-                icon: "✈️",
-                title: "Verified Flight Reservation",
-                desc: "Flight reservation with verified PNR for your visa application. Only $10. Bundle with Hotel for just $20.",
-
+                icon: "📋",
+                title: "Verified Itinerary Planning",
+                desc: "Legitimate flight & hotel itineraries for visa documentation assistance. Digital services only, ensured by our professional analysts.",
                 gradient: "from-gold-light/50 to-cream",
                 border: "border-gold-border",
-                badge: "POPULAR",
+                badge: "ESSENTIAL",
                 link: "/order"
               },
               {
                 icon: "🧭",
-                title: "Smart Navigator",
-                desc: "Instantly check visa requirements and generate a premium AI travel itinerary.",
-                footer: "Real-time Global Visa Database",
+                title: "Smart Travel Navigator",
+                desc: "Instantly accessible global visa database and AI-generated itineraries tailored to your specific destination requirements.",
+                footer: "Official Global Data Source",
                 gradient: "from-primary/5 to-gold-light/20",
                 border: "border-gold-border",
-                badge: "TRENDING",
+                badge: "UTILITY",
                 link: "/smart-navigator"
               },
             ].map((f) => (
@@ -200,7 +198,7 @@ export default function Home() {
               href="/order"
               className="px-8 py-4 bg-white/10 text-white font-bold text-base rounded-xl border border-white/20 hover:bg-white/20 transition-all inline-block font-heading"
             >
-              ✈️ Order Verified Reservation
+              📋 Itinerary Planning Documents
             </Link>
           </div>
         </div>
@@ -215,7 +213,7 @@ export default function Home() {
                 <Logo />
               </Link>
               <p className="text-sm text-muted max-w-xs leading-relaxed">
-                AI-powered visa predictions and verified flight reservations for your visa application. Travel with confidence.
+                AI-powered visa predictive analysis and professional travel documentation assistance services. Prepare your application with confidence.
               </p>
             </div>
             <div>
@@ -243,10 +241,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* ═══ Live Chat Widget ═══ */}
-      <div id="live-chat">
-        <LiveChatWrapper />
-      </div>
     </div>
   );
 }

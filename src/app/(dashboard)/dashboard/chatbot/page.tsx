@@ -4,7 +4,7 @@ import BookingChatbot from "@/components/booking/BookingChatbot";
 
 export const metadata = {
     title: "AI Booking Assistant — GetDocuFlight",
-    description: "Pesan dummy ticket lewat AI chatbot.",
+    description: "Pesan bantuan dokumentasi perjalanan lewat AI chatbot.",
 };
 
 export default async function ChatbotPage() {

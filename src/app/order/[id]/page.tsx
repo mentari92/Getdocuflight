@@ -20,8 +20,8 @@ export async function generateMetadata({
 }) {
     const { id } = await params;
     return {
-        title: `Order ${id.slice(0, 8)}… — GetDocuFlight`,
-        description: "Your dummy ticket order status.",
+        title: `Itinerary Plan ${id.slice(0, 8)}… — GetDocuFlight`,
+        description: "Your professional travel documentation order status.",
     };
 }
 
@@ -103,7 +103,7 @@ export default async function OrderDetailPage({
     };
 
     const status = statusConfig[booking.status] || statusConfig.DRAFT;
-    const isBundle = booking.productType === "DUMMY_BUNDLE";
+    const isBundle = booking.productType === "VERIFIED_BUNDLE";
 
     return (
         <div className="min-h-screen bg-white">
@@ -149,8 +149,8 @@ export default async function OrderDetailPage({
                 <div className="bg-surface/50 rounded-2xl p-5 text-center">
                     <p className="text-sm font-bold text-heading">
                         {isBundle
-                            ? "✈️🏨 Bundle: Flight + Hotel"
-                            : "✈️ Dummy Flight Ticket"}
+                            ? "📋🏨 Comprehensive Travel Plan"
+                            : "📋 Verified Itinerary Planning"}
                     </p>
                     <p className="text-lg font-extrabold text-primary mt-1">
                         ${priceUSD} USD
@@ -304,14 +304,14 @@ export default async function OrderDetailPage({
                         <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
                             <span className="text-2xl block mb-2">🎉</span>
                             <p className="text-sm font-semibold text-green-800">
-                                Dummy ticket has been sent to{" "}
+                                Itinerary planning documents have been sent to{" "}
                                 {booking.contactEmail}!
                             </p>
                         </div>
                     )}
 
                 <p className="text-xs text-subtle text-center">
-                    Dummy ticket is valid for visa applications. Not an actual
+                    Itinerary planning assistace is valid for visa documentation purposes. Not an actual
                     flight ticket.
                 </p>
             </main>

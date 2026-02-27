@@ -112,8 +112,7 @@ export default function PayBookingButton({
             </div>
 
             <p className="text-xs text-subtle mb-4">
-                Dummy ticket will be sent via {notifLabel} within 1–2 hours after
-                payment.
+                Itinerary planning documents will be sent via {notifLabel} within 1–2 hours after payment.
             </p>
 
             {error && (

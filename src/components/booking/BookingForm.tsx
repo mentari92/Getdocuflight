@@ -492,7 +492,7 @@ export default function BookingForm() {
                                     Memproses...
                                 </span>
                             ) : (
-                                "Pesan Dummy Ticket"
+                                "Pesan Bantuan Dokumentasi Perjalanan"
                             )}
                         </button>
                     </div>

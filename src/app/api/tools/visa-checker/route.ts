@@ -30,16 +30,31 @@ export async function POST(req: Request) {
         console.log("OpenAI result received");
 
         // 3. Log usage (Lead Generation) - Non-blocking
-        prisma.freeToolsUsage.create({
-            data: {
-                userId: session?.user?.id || null,
-                toolType: "VISA_CHECKER",
-                email: email || session?.user?.email || null,
-                ipAddress: ip,
-                params: { nationality, destination, duration },
-            },
-        }).then(() => console.log("Usage logged to DB"))
-            .catch((err) => console.error("Database logging failed:", err));
+        const logUsage = async () => {
+            try {
+                const userId = session?.user?.id;
+                let validUserId = null;
+                if (userId) {
+                    const u = await prisma.user.findUnique({ where: { id: userId } });
+                    if (u) validUserId = userId;
+                }
+
+                await prisma.freeToolsUsage.create({
+                    data: {
+                        userId: validUserId,
+                        toolType: "VISA_CHECKER",
+                        email: email || session?.user?.email || null,
+                        ipAddress: ip,
+                        params: { nationality, destination, duration },
+                    },
+                });
+                console.log("Usage logged to DB");
+            } catch (err) {
+                console.error("Database logging failed:", err);
+            }
+        };
+
+        logUsage();
 
         return NextResponse.json(result);
     } catch (error) {

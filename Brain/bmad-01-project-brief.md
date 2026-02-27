@@ -5,6 +5,20 @@
 **Updated:** 3 products (AI Predictor $5, Dummy Flight $10, Bundle $20), order form, live chat, document upload, compliance
 
 ---
+### Phase 3: Submit Polar.sh Appeal
+**Target**: Submit the manual appeal to trigger a human review of the live site. (Completed)
+
+### Phase 4: AI Stability & Compliance Cleanup
+**Target**: Restore AI output quality and remove all remaining "dummy" terminology.
+
+#### [MODIFY] [openai.ts](file:///Users/mentarirahman/Documents/Getdocuflight/src/lib/openai.ts)
+- Switch free tools from `deepseek/deepseek-chat` to `openai/gpt-4o-mini` for higher reliability on OpenRouter.
+- Update Chat AI system prompt to use professional terminology.
+
+#### [MODIFY] [ItineraryDisplay.tsx](file:///Users/mentarirahman/Documents/Getdocuflight/src/components/tools/ItineraryDisplay.tsx)
+- Change "Buy Dummy Ticket" button text to "Get Verified Reservation".
+
+## Verification Plan
 
 ## Problem Statement
 
